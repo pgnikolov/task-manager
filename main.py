@@ -86,10 +86,16 @@ def get_task(tasks, task_id):
 	Parameters:
 	tasks.json (list of dict): The current list of tasks.json.
 	task_id (int): The ID of the task to be retrieved.
-
 	Returns:
-	dict: The task with the specified ID, or None if not found.
+		prints info about the task
 	"""
+	if task_id in tasks:
+		task_info = tasks[task_id]
+		for key, value in task_info.items():
+			print(f"{key}: {value}")
+	else:
+		print(f"Task with with ID: {task_id} not found.")
+
 
 
 def set_task_priority(tasks, task_id, priority):
@@ -345,7 +351,7 @@ def main():
 			tasks = update_task(tasks, task_id)
 			print("Task updated successfully.")
 		elif choice == '4':
-			task_id = int(input("Enter task ID to get: "))
+			task_id = input("Enter task ID to get: ")
 			task = get_task(tasks, task_id)
 			print("Task details:", task)
 		elif choice == '5':
