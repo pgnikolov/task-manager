@@ -46,9 +46,10 @@ def remove_task(tasks, task_id):
 
 		with open('tasks.json', 'w') as f:
 			json.dump(tasks, f, indent=4)
+	return tasks
 
 
-def update_task(tasks, task_id, updated_task):
+def update_task(tasks, task_id):
 	"""
 	Updates an existing task.
 
@@ -60,6 +61,22 @@ def update_task(tasks, task_id, updated_task):
 	Returns:
 	list of dict: Updated list of tasks.json.
 	"""
+	updated_task = {
+		'description': input("Enter new task description: "),
+		'priority': input("Enter new task priority (low, medium, high): "),
+		'deadline': input("Enter new task deadline (YYYY-MM-DD): ")
+	}
+	task_id = str(task_id)
+	if task_id not in tasks:
+		print(f"Task with with ID: {task_id} not found.")
+
+	tasks[task_id]['description'] = updated_task['description']
+	tasks[task_id]['priority'] = updated_task['priority']
+	tasks[task_id]['deadline'] = updated_task['deadline']
+	with open('tasks.json', 'w') as f:
+		json.dump(tasks, f, indent=4)
+
+	return tasks
 
 
 def get_task(tasks, task_id):
@@ -325,12 +342,7 @@ def main():
 			print("Task removed successfully.")
 		elif choice == '3':
 			task_id = int(input("Enter task ID to update: "))
-			updated_task = {
-				'description': input("Enter new task description: "),
-				'priority': input("Enter new task priority (low, medium, high): "),
-				'deadline': input("Enter new task deadline (YYYY-MM-DD): ")
-			}
-			tasks = update_task(tasks, task_id, updated_task)
+			tasks = update_task(tasks, task_id)
 			print("Task updated successfully.")
 		elif choice == '4':
 			task_id = int(input("Enter task ID to get: "))
