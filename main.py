@@ -21,6 +21,9 @@ def add_task(tasks):
 		'completed': False
 	}
 	tasks[task["id"]] = task
+	if task["id"] in tasks:
+		print(f"You already have task with ID {task['id']}!")
+		main()
 	with open('tasks.json', 'w') as f:
 		json.dump(tasks, f, indent=4)
 	return tasks
