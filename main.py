@@ -87,12 +87,11 @@ def get_task(tasks, task_id):
 	tasks.json (list of dict): The current list of tasks.json.
 	task_id (int): The ID of the task to be retrieved.
 	Returns:
-		prints info about the task
+		task info as dictionary
 	"""
 	if task_id in tasks:
 		task_info = tasks[task_id]
-		for key, value in task_info.items():
-			print(f"{key}: {value}")
+		return task_info
 	else:
 		print(f"Task with with ID: {task_id} not found.")
 
