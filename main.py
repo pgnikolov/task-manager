@@ -11,7 +11,7 @@ def add_task(tasks):
 	task (dict): The task to be added.
 
 	Returns:
-	list of dict: Updated list of tasks.json.
+	list of dict: Updated tasks.json.
 	"""
 	task = {
 		'id': int(input("Enter task ID: ")),
@@ -35,7 +35,7 @@ def remove_task(tasks, task_id):
 	task_id (int): The ID of the task to be removed.
 
 	Returns:
-	list of dict: Updated list of tasks.json.
+	list of dict: Updated tasks.json.
 	"""
 	task_id = str(task_id)
 	if task_id not in tasks:
@@ -59,7 +59,7 @@ def update_task(tasks, task_id):
 	updated_task (dict): The updated task details.
 
 	Returns:
-	list of dict: Updated list of tasks.json.
+	list of dict: Updated tasks.json.
 	"""
 	updated_task = {
 		'description': input("Enter new task description: "),
