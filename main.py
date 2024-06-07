@@ -239,6 +239,12 @@ def filter_tasks_by_deadline(tasks, deadline):
 	Returns:
 	list of dict: Tasks with the specified deadline.
 	"""
+	results_by_deadline = []
+	for task in tasks:
+		if datetime.strptime(task["deadline"], '%Y-%m-%d') <= datetime.strptime(deadline, '%Y-%m-%d'):
+			results_by_deadline.append(task)
+
+	return results_by_deadline
 
 
 def count_tasks(tasks):
@@ -262,7 +268,7 @@ def count_completed_tasks(tasks):
 	tasks.json (list of dict): The current list of tasks.json.
 
 	Returns:
-	int: The number of completed tasks.json.
+	int: The number of completed tasks.json
 	"""
 
 	status = True
@@ -297,6 +303,11 @@ def generate_task_summary(tasks):
 	Returns:
 	dict: A summary report containing total, completed, and pending tasks.json.
 	"""
+	summary = {
+		"Total pending tasks": count_pending_tasks(tasks),
+		"Total completed tasks": count_completed_tasks(tasks)
+	}
+	return summary
 
 
 def save_tasks_to_file(tasks, file_path):
@@ -460,20 +471,12 @@ def main():
 			summary = generate_task_summary(tasks)
 			print("Task Summary:", summary)
 		elif choice == '17':
-			file_path = input("Enter file path to save tasks.json: ")
-			save_tasks_to_file(tasks, file_path)
-			print("Tasks saved to file.")
-		elif choice == '18':
-			file_path = input("Enter file path to load tasks.json from: ")
-			tasks = load_tasks_from_file(file_path)
-			print("Tasks loaded from file.")
-		elif choice == '19':
 			tasks = sort_tasks_by_deadline(tasks)
 			print("Tasks sorted by deadline.")
-		elif choice == '20':
+		elif choice == '19':
 			tasks = sort_tasks_by_priority(tasks)
 			print("Tasks sorted by priority.")
-		elif choice == '21':
+		elif choice == '20':
 			print("Exiting...")
 			break
 		else:
