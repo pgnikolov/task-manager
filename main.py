@@ -215,6 +215,17 @@ def filter_tasks_by_status(tasks, status):
 	Returns:
 	list of dict: Tasks with the specified completion status.
 	"""
+	results_by_status = []
+	if status == "completed":
+		status = True
+	elif status == "pending":
+		status = False
+
+	for task in tasks:
+		if task["completed"] == status:
+			results_by_status.append(task)
+
+	return results_by_status
 
 
 def filter_tasks_by_deadline(tasks, deadline):
@@ -240,6 +251,7 @@ def count_tasks(tasks):
 	Returns:
 	int: The total number of tasks.json.
 	"""
+	return len(tasks)
 
 
 def count_completed_tasks(tasks):
@@ -253,6 +265,11 @@ def count_completed_tasks(tasks):
 	int: The number of completed tasks.json.
 	"""
 
+	status = True
+	results_by_status = filter_tasks_by_status(tasks, status)
+
+	return len(results_by_status)
+
 
 def count_pending_tasks(tasks):
 	"""
@@ -264,6 +281,10 @@ def count_pending_tasks(tasks):
 	Returns:
 	int: The number of pending tasks.json.
 	"""
+	status = False
+	results_by_status = filter_tasks_by_status(tasks, status)
+
+	return len(results_by_status)
 
 
 def generate_task_summary(tasks):
