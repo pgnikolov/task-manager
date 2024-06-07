@@ -21,7 +21,7 @@ def add_task(tasks, task):
 
 	tasks.append(task)
 	with open('tasks.json', 'w') as f:
-		json.dump(tasks, f,)
+		json.dump(tasks, f, )
 	return tasks
 
 
@@ -37,8 +37,11 @@ def remove_task(tasks, task_id):
 	list of dict: Updated tasks.json.
 	"""
 	task_to_remove = [task for task in tasks if task["id"] == task_id]
-	tasks.remove(task_to_remove)
+	if not task_to_remove:
+		print(f"Task with ID {task_id} not found.")
+		main()
 
+	tasks.remove(task_to_remove[0])
 	with open('tasks.json', 'w') as f:
 		json.dump(tasks, f)
 	return tasks
@@ -56,10 +59,12 @@ def update_task(tasks, task_id, updated_task):
 	Returns:
 	list of dict: Updated tasks.json.
 	"""
-	for task in tasks:
-		if task["id"] == task_id:
-			task.update(updated_task)
-			break
+	task_to_update = [tasks.index(task) for task in tasks if task["id"] == task_id]
+	if not task_to_update:
+		print(f"Task with ID {task_id} not found.")
+		main()
+
+	tasks[task_to_update[0]].update(updated_task)
 	with open('tasks.json', 'w') as f:
 		json.dump(tasks, f)
 
@@ -76,9 +81,12 @@ def get_task(tasks, task_id):
 	Returns:
 		task info as dictionary
 	"""
-	task_to_get = [task for task in tasks if task["id"] == task_id]
+	task_get = [tasks.index(task) for task in tasks if task["id"] == task_id]
+	if not task_get:
+		print(f"Task with ID {task_id} not found.")
+		main()
 
-	return task_to_get
+	return tasks[task_get[0]]
 
 
 def set_task_priority(tasks, task_id, priority):
@@ -93,10 +101,12 @@ def set_task_priority(tasks, task_id, priority):
 	Returns:
 	list of dict: Updated list of tasks.json.
 	"""
-	for task in tasks:
-		if task["id"] == task_id:
-			task['priority'] = priority
-			break
+	task_priority = [tasks.index(task) for task in tasks if task["id"] == task_id]
+	if not task_priority:
+		print(f"Task with ID {task_id} not found.")
+		main()
+
+	tasks[task_priority[0]]["priority"] = priority
 
 	with open('tasks.json', 'w') as f:
 		json.dump(tasks, f)
@@ -115,10 +125,12 @@ def set_task_deadline(tasks, task_id, deadline):
 	Returns:
 	list of dict: Updated list of tasks.json.
 	"""
-	for task in tasks:
-		if task['id'] == task_id:
-			task['deadline'] = deadline
-			break
+	task_deadline = [tasks.index(task) for task in tasks if task["id"] == task_id]
+	if not task_deadline:
+		print(f"Task with ID {task_id} not found.")
+		main()
+
+	tasks[task_deadline[0]]["deadline"] = deadline
 
 	with open('tasks.json', 'w') as f:
 		json.dump(tasks, f)
@@ -136,10 +148,13 @@ def mark_task_as_completed(tasks, task_id):
 	Returns:
 	list of dict: Updated list of tasks.json.
 	"""
-	for task in tasks:
-		if task['id'] == task_id:
-			task['completed'] = True
-			break
+	task_complete = [tasks.index(task) for task in tasks if task["id"] == task_id]
+	if not task_complete:
+		print(f"Task with ID {task_id} not found.")
+		main()
+
+	tasks[task_complete[0]]["completed"] = True
+
 	with open('tasks.json', 'w') as f:
 		json.dump(tasks, f)
 	return tasks
@@ -157,10 +172,13 @@ def set_task_description(tasks, task_id, description):
 	Returns:
 	list of dict: Updated list of tasks.json.
 	"""
-	for task in tasks:
-		if task['id'] == task_id:
-			task['description'] = description
-			break
+	task_desciption = [tasks.index(task) for task in tasks if task["id"] == task_id]
+	if not task_desciption:
+		print(f"Task with ID {task_id} not found.")
+		main()
+
+	tasks[task_desciption[0]]["description"] = description
+
 	with open('tasks.json', 'w') as f:
 		json.dump(tasks, f)
 	return tasks
@@ -180,8 +198,12 @@ def search_tasks_by_keyword(tasks, keyword):
 	founded_tasks = []
 
 	for task in tasks:
-		if keyword in task.get("description".lower(), "".lower()):
+		if keyword.lower() in task.get("description", "").lower():
 			founded_tasks.append(task)
+
+	if not founded_tasks:
+		print(f"There is no task with '{keyword}' in description.")
+		main()
 
 	return founded_tasks
 
@@ -201,6 +223,10 @@ def filter_tasks_by_priority(tasks, priority):
 	for task in tasks:
 		if priority in task.get("priority", ""):
 			results_by_prio.append(task)
+
+	if not results_by_prio:
+		print(f"There is no task with priority:'{priority}' in your tasks.")
+		main()
 
 	return results_by_prio
 
@@ -321,6 +347,10 @@ def sort_tasks_by_deadline(tasks):
 	Returns:
 	list of dict: The sorted list of tasks.json.
 	"""
+	if not tasks:
+		print("You have no tasks")
+		main()
+
 	tasks = sorted(tasks, key=lambda x: datetime.strptime(x["deadline"], '%Y-%m-%d'))
 	with open('tasks.json', 'w') as f:
 		json.dump(tasks, f)
@@ -337,6 +367,10 @@ def sort_tasks_by_priority(tasks):
 	Returns:
 	list of dict: The sorted list of tasks.json.
 	"""
+	if not tasks:
+		print("You have no tasks")
+		main()
+
 	priority_as_value = {"high": 1, "medium": 2, "low": 3}
 	tasks = sorted(tasks, key=lambda x: priority_as_value[x["priority"]])
 	with open('tasks.json', 'w') as f:
@@ -380,15 +414,18 @@ def main():
 		print_menu()
 		choice = input("Enter your choice: ")
 		if choice == '1':
-			task = {
-				'id': int(input("Enter task ID: ")),
-				'description': input("Enter task description: ").capitalize(),
-				'priority': input("Enter task priority (low, medium, high): ").lower(),
-				'deadline': input("Enter task deadline (YYYY-MM-DD): "),
-				'completed': False
-			}
-			tasks = add_task(tasks, task)
-			print("Task added successfully.")
+			try:
+				task = {
+					'id': int(input("Enter task ID: ")),
+					'description': input("Enter task description: ").capitalize(),
+					'priority': input("Enter task priority (low, medium, high): ").lower(),
+					'deadline': input("Enter task deadline (YYYY-MM-DD): "),
+					'completed': False
+				}
+				tasks = add_task(tasks, task)
+				print("Task added successfully.")
+			except ValueError:
+				print("ID must be integer")
 		elif choice == '2':
 			task_id = int(input("Enter task ID to remove: "))
 			tasks = remove_task(tasks, task_id)
