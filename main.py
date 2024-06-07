@@ -16,7 +16,8 @@ def add_task(tasks, task):
 	existing_ids = [t["id"] for t in tasks]
 
 	if task["id"] in existing_ids:
-		return f"You already have task with ID {task['id']}!"
+		print(f"You already have task with ID {task['id']}!")
+		main()
 
 	tasks.append(task)
 	with open('tasks.json', 'w') as f:
@@ -179,7 +180,7 @@ def search_tasks_by_keyword(tasks, keyword):
 	founded_tasks = []
 
 	for task in tasks:
-		if keyword in task.get("description", ""):
+		if keyword in task.get("description".lower(), "".lower()):
 			founded_tasks.append(task)
 
 	return founded_tasks
@@ -381,8 +382,8 @@ def main():
 		if choice == '1':
 			task = {
 				'id': int(input("Enter task ID: ")),
-				'description': input("Enter task description: "),
-				'priority': input("Enter task priority (low, medium, high): "),
+				'description': input("Enter task description: ").capitalize(),
+				'priority': input("Enter task priority (low, medium, high): ").lower(),
 				'deadline': input("Enter task deadline (YYYY-MM-DD): "),
 				'completed': False
 			}
@@ -395,8 +396,8 @@ def main():
 		elif choice == '3':
 			task_id = int(input("Enter task ID to update: "))
 			updated_task = {
-				'description': input("Enter new task description: "),
-				'priority': input("Enter new task priority (low, medium, high): "),
+				'description': input("Enter new task description: ").capitalize(),
+				'priority': input("Enter new task priority (low, medium, high): ").lower(),
 				'deadline': input("Enter new task deadline (YYYY-MM-DD): ")
 			}
 			tasks = update_task(tasks, task_id, updated_task)
@@ -407,7 +408,7 @@ def main():
 			print("Task details:", task)
 		elif choice == '5':
 			task_id = int(input("Enter task ID to set priority: "))
-			priority = input("Enter new priority (low, medium, high): ")
+			priority = input("Enter new priority (low, medium, high): ").lower()
 			tasks = set_task_priority(tasks, task_id, priority)
 			print("Task priority set successfully.")
 		elif choice == '6':
@@ -421,11 +422,11 @@ def main():
 			print("Task marked as completed.")
 		elif choice == '8':
 			task_id = int(input("Enter task ID to set description: "))
-			description = input("Enter new description: ")
+			description = input("Enter new description: ").capitalize()
 			tasks = set_task_description(tasks, task_id, description)
 			print("Task description set successfully.")
 		elif choice == '9':
-			keyword = input("Enter keyword to search: ")
+			keyword = input("Enter keyword to search: ").lower()
 			found_tasks = search_tasks_by_keyword(tasks, keyword)
 			print("Tasks found:", found_tasks)
 		elif choice == '10':
