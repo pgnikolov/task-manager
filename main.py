@@ -310,31 +310,6 @@ def generate_task_summary(tasks):
 	return summary
 
 
-def save_tasks_to_file(tasks, file_path):
-	"""
-	Saves the task list to a file.
-
-	Parameters:
-	tasks.json (list of dict): The current list of tasks.json.
-	file_path (str): The path to the file where tasks.json will be saved.
-
-	Returns:
-	None
-	"""
-
-
-def load_tasks_from_file(file_path):
-	"""
-	Loads the task list from a file.
-
-	Parameters:
-	file_path (str): The path to the file where tasks.json are saved.
-
-	Returns:
-	list of dict: The loaded list of tasks.json.
-	"""
-
-
 def sort_tasks_by_deadline(tasks):
 	"""
 	Sorts tasks.json by their deadline.
