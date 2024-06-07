@@ -320,6 +320,10 @@ def sort_tasks_by_deadline(tasks):
 	Returns:
 	list of dict: The sorted list of tasks.json.
 	"""
+	tasks = sorted(tasks, key=lambda x: datetime.strptime(x["deadline"], '%Y-%m-%d'))
+	with open('tasks.json', 'w') as f:
+		json.dump(tasks, f)
+	return tasks
 
 
 def sort_tasks_by_priority(tasks):
@@ -361,11 +365,9 @@ def print_menu():
 	14. Count Completed Tasks
 	15. Count Pending Tasks
 	16. Generate Task Summary
-	17. Save Tasks to File
-	18. Load Tasks from File
-	19. Sort Tasks by Deadline
-	20. Sort Tasks by Priority
-	21. Exit
+	17. Sort Tasks by Deadline
+	18. Sort Tasks by Priority
+	19. Exit
 	"""
 	print(menu)
 
@@ -453,10 +455,10 @@ def main():
 		elif choice == '17':
 			tasks = sort_tasks_by_deadline(tasks)
 			print("Tasks sorted by deadline.")
-		elif choice == '19':
+		elif choice == '18':
 			tasks = sort_tasks_by_priority(tasks)
 			print("Tasks sorted by priority.")
-		elif choice == '20':
+		elif choice == '19':
 			print("Exiting...")
 			break
 		else:
