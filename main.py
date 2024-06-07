@@ -332,6 +332,11 @@ def sort_tasks_by_priority(tasks):
 	Returns:
 	list of dict: The sorted list of tasks.json.
 	"""
+	priority_as_value = {"high": 1, "medium": 2, "low": 3}
+	tasks = sorted(tasks, key=lambda x: priority_as_value[x["priority"]])
+	with open('tasks.json', 'w') as f:
+		json.dump(tasks, f)
+	return tasks
 
 
 def print_menu():
