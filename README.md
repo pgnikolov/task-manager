@@ -1,6 +1,6 @@
 # Task Manager :notebook:	
 
- <img src="https://github.com/pgnikolov/task-manager/assets/151896883/9324d27a-9ef9-4a0c-9e02-f74876ce36f9" width="790" height="434">
+ <img src="https://github.com/pgnikolov/task-manager/assets/151896883/9324d27a-9ef9-4a0c-9e02-f74876ce36f9" width="750" height="400">
  
 A simple command-line task manager application written in Python. This project allows users to manage tasks by adding, updating, removing, and filtering tasks based on various criteria.
 
