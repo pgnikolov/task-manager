@@ -1,10 +1,10 @@
-# Task Manager :notebook:	
+# Task Manager 📑	
 
- <img src="https://github.com/pgnikolov/task-manager/assets/151896883/9324d27a-9ef9-4a0c-9e02-f74876ce36f9" width="1024" height="640">
+ <img src="https://github.com/pgnikolov/task-manager/assets/151896883/9324d27a-9ef9-4a0c-9e02-f74876ce36f9" width="750" height="400">
  
 A simple command-line task manager application written in Python. This project allows users to manage tasks by adding, updating, removing, and filtering tasks based on various criteria.
 
-## Features
+## Features 🧰
 
 - Add Task: Add new tasks to the list.
 - Remove Task: Remove tasks by their ID.
@@ -25,7 +25,7 @@ A simple command-line task manager application written in Python. This project a
 - Sort Tasks by Deadline: Sort tasks by their deadline.
 - Sort Tasks by Priority: Sort tasks by their priority.
 
-## Getting Started
+## Getting Started 💻
 
 ### Prerequisites
 - Python 3.x
@@ -188,8 +188,8 @@ Sorts tasks by their priority.
 ### Contributing
 Contributions are welcome! Please fork the repository and submit a pull request.
 
-### License
+### License ©️
 This project is licensed under the MIT License. See the LICENSE file for details.
 
-### Contact
+### Contact 📫
 For any questions or feedback, please contact [![Gmail](https://img.shields.io/badge/-Gmail-c14438?style=flat&logo=Gmail&logoColor=white)](mailto:pgnikolov@gmail.com)
