@@ -3,505 +3,535 @@ from datetime import datetime
 
 
 def add_task(tasks, task):
-	"""
-	Adds a new task to the task list.
+    """
+    Adds a new task to the task list.
 
-	Parameters:
-	tasks.json (list of dict): The current list of tasks.json.
-	task (dict): The task to be added.
+    Parameters:
+    tasks.json (list of dict): The current list of tasks.json.
+    task (dict): The task to be added.
 
-	Returns:
-	list of dict: Updated tasks.json.
-	"""
-	existing_ids = [t["id"] for t in tasks]
+    Returns:
+    list of dict: Updated tasks.json.
+    """
+    existing_ids = [t["id"] for t in tasks]
 
-	if task["id"] in existing_ids:
-		print(f"You already have task with ID {task['id']}!")
-		main()
+    if task["id"] in existing_ids:
+        print(f"You already have task with ID {task['id']}!")
+        main()
 
-	tasks.append(task)
-	with open('tasks.json', 'w') as f:
-		json.dump(tasks, f, )
-	return tasks
+    tasks.append(task)
+    with open('tasks.json', 'w') as f:
+        json.dump(tasks, f, )
+    return tasks
 
 
 def remove_task(tasks, task_id):
-	"""
-	Removes a task by its ID.
+    """
+    Removes a task by its ID.
 
-	Parameters:
-	tasks.json (list of dict): The current list of tasks.json.
-	task_id (int): The ID of the task to be removed.
+    Parameters:
+    tasks.json (list of dict): The current list of tasks.json.
+    task_id (int): The ID of the task to be removed.
 
-	Returns:
-	list of dict: Updated tasks.json.
-	"""
-	task_to_remove = [task for task in tasks if task["id"] == task_id]
-	if not task_to_remove:
-		print(f"Task with ID {task_id} not found.")
-		main()
+    Returns:
+    list of dict: Updated tasks.json.
+    """
+    task_to_remove = [task for task in tasks if task["id"] == task_id]
+    if not task_to_remove:
+        print(f"Task with ID {task_id} not found.")
+        main()
 
-	tasks.remove(task_to_remove[0])
-	with open('tasks.json', 'w') as f:
-		json.dump(tasks, f)
-	return tasks
+    tasks.remove(task_to_remove[0])
+    with open('tasks.json', 'w') as f:
+        json.dump(tasks, f)
+    return tasks
 
 
 def update_task(tasks, task_id, updated_task):
-	"""
-	Updates an existing task.
+    """
+    Updates an existing task.
 
-	Parameters:
-	tasks.json (list of dict): The current list of tasks.json.
-	task_id (int): The ID of the task to be updated.
-	updated_task (dict): The updated task details.
+    Parameters:
+    tasks.json (list of dict): The current list of tasks.json.
+    task_id (int): The ID of the task to be updated.
+    updated_task (dict): The updated task details.
 
-	Returns:
-	list of dict: Updated tasks.json.
-	"""
-	task_to_update = [tasks.index(task) for task in tasks if task["id"] == task_id]
-	if not task_to_update:
-		print(f"Task with ID {task_id} not found.")
-		main()
+    Returns:
+    list of dict: Updated tasks.json.
+    """
+    task_to_update = [tasks.index(task) for task in tasks if task["id"] == task_id]
+    if not task_to_update:
+        print(f"Task with ID {task_id} not found.")
+        main()
 
-	tasks[task_to_update[0]].update(updated_task)
-	with open('tasks.json', 'w') as f:
-		json.dump(tasks, f)
+    tasks[task_to_update[0]].update(updated_task)
+    with open('tasks.json', 'w') as f:
+        json.dump(tasks, f)
 
-	return tasks
+    return tasks
 
 
 def get_task(tasks, task_id):
-	"""
-	Retrieves a task by its ID.
+    """
+    Retrieves a task by its ID.
 
-	Parameters:
-	tasks.json (list of dict): The current list of tasks.json.
-	task_id (int): The ID of the task to be retrieved.
-	Returns:
-		task info as dictionary
-	"""
-	task_get = [tasks.index(task) for task in tasks if task["id"] == task_id]
-	if not task_get:
-		print(f"Task with ID {task_id} not found.")
-		main()
+    Parameters:
+    tasks.json (list of dict): The current list of tasks.json.
+    task_id (int): The ID of the task to be retrieved.
+    Returns:
+        task info as dictionary
+    """
+    task_get = [tasks.index(task) for task in tasks if task["id"] == task_id]
+    if not task_get:
+        print(f"Task with ID {task_id} not found.")
+        main()
 
-	return tasks[task_get[0]]
+    return tasks[task_get[0]]
 
 
 def set_task_priority(tasks, task_id, priority):
-	"""
-	Sets the priority of a task.
+    """
+    Sets the priority of a task.
 
-	Parameters:
-	tasks.json (list of dict): The current list of tasks.json.
-	task_id (int): The ID of the task to be updated.
-	priority (str): The new priority level.
+    Parameters:
+    tasks.json (list of dict): The current list of tasks.json.
+    task_id (int): The ID of the task to be updated.
+    priority (str): The new priority level.
 
-	Returns:
-	list of dict: Updated list of tasks.json.
-	"""
-	task_priority = [tasks.index(task) for task in tasks if task["id"] == task_id]
-	if not task_priority:
-		print(f"Task with ID {task_id} not found.")
-		main()
+    Returns:
+    list of dict: Updated list of tasks.json.
+    """
+    task_priority = [tasks.index(task) for task in tasks if task["id"] == task_id]
+    if not task_priority:
+        print(f"Task with ID {task_id} not found.")
+        main()
 
-	tasks[task_priority[0]]["priority"] = priority
+    tasks[task_priority[0]]["priority"] = priority
 
-	with open('tasks.json', 'w') as f:
-		json.dump(tasks, f)
-	return tasks
+    with open('tasks.json', 'w') as f:
+        json.dump(tasks, f)
+    return tasks
 
 
 def set_task_deadline(tasks, task_id, deadline):
-	"""
-	Sets the deadline for a task.
+    """
+    Sets the deadline for a task.
 
-	Parameters:
-	tasks.json (list of dict): The current list of tasks.json.
-	task_id (int): The ID of the task to be updated.
-	deadline (str): The new deadline.
+    Parameters:
+    tasks.json (list of dict): The current list of tasks.json.
+    task_id (int): The ID of the task to be updated.
+    deadline (str): The new deadline.
 
-	Returns:
-	list of dict: Updated list of tasks.json.
-	"""
-	task_deadline = [tasks.index(task) for task in tasks if task["id"] == task_id]
-	if not task_deadline:
-		print(f"Task with ID {task_id} not found.")
-		main()
+    Returns:
+    list of dict: Updated list of tasks.json.
+    """
+    task_deadline = [tasks.index(task) for task in tasks if task["id"] == task_id]
+    if not task_deadline:
+        print(f"Task with ID {task_id} not found.")
+        main()
 
-	tasks[task_deadline[0]]["deadline"] = deadline
+    tasks[task_deadline[0]]["deadline"] = deadline
 
-	with open('tasks.json', 'w') as f:
-		json.dump(tasks, f)
-	return tasks
+    with open('tasks.json', 'w') as f:
+        json.dump(tasks, f)
+    return tasks
 
 
 def mark_task_as_completed(tasks, task_id):
-	"""
-	Marks a task as completed.
+    """
+    Marks a task as completed.
 
-	Parameters:
-	tasks.json (list of dict): The current list of tasks.json.
-	task_id (int): The ID of the task to be marked as completed.
+    Parameters:
+    tasks.json (list of dict): The current list of tasks.json.
+    task_id (int): The ID of the task to be marked as completed.
 
-	Returns:
-	list of dict: Updated list of tasks.json.
-	"""
-	task_complete = [tasks.index(task) for task in tasks if task["id"] == task_id]
-	if not task_complete:
-		print(f"Task with ID {task_id} not found.")
-		main()
+    Returns:
+    list of dict: Updated list of tasks.json.
+    """
+    task_complete = [tasks.index(task) for task in tasks if task["id"] == task_id]
+    if not task_complete:
+        print(f"Task with ID {task_id} not found.")
+        main()
 
-	tasks[task_complete[0]]["completed"] = True
+    tasks[task_complete[0]]["completed"] = True
 
-	with open('tasks.json', 'w') as f:
-		json.dump(tasks, f)
-	return tasks
+    with open('tasks.json', 'w') as f:
+        json.dump(tasks, f)
+    return tasks
 
 
 def set_task_description(tasks, task_id, description):
-	"""
-	Sets the description for a task.
+    """
+    Sets the description for a task.
 
-	Parameters:
-	tasks.json (list of dict): The current list of tasks.json.
-	task_id (int): The ID of the task to be updated.
-	description (str): The new description.
+    Parameters:
+    tasks.json (list of dict): The current list of tasks.json.
+    task_id (int): The ID of the task to be updated.
+    description (str): The new description.
 
-	Returns:
-	list of dict: Updated list of tasks.json.
-	"""
-	task_desciption = [tasks.index(task) for task in tasks if task["id"] == task_id]
-	if not task_desciption:
-		print(f"Task with ID {task_id} not found.")
-		main()
+    Returns:
+    list of dict: Updated list of tasks.json.
+    """
+    task_desciption = [tasks.index(task) for task in tasks if task["id"] == task_id]
+    if not task_desciption:
+        print(f"Task with ID {task_id} not found.")
+        main()
 
-	tasks[task_desciption[0]]["description"] = description
+    tasks[task_desciption[0]]["description"] = description
 
-	with open('tasks.json', 'w') as f:
-		json.dump(tasks, f)
-	return tasks
+    with open('tasks.json', 'w') as f:
+        json.dump(tasks, f)
+    return tasks
 
 
 def search_tasks_by_keyword(tasks, keyword):
-	"""
-	Searches tasks.json by a keyword in the description.
+    """
+    Searches tasks.json by a keyword in the description.
 
-	Parameters:
-	tasks.json (list of dict): The current list of tasks.json.
-	keyword (str): The keyword to search for.
+    Parameters:
+    tasks.json (list of dict): The current list of tasks.json.
+    keyword (str): The keyword to search for.
 
-	Returns:
-	list of dict: Tasks that contain the keyword in their description.
-	"""
-	founded_tasks = []
+    Returns:
+    list of dict: Tasks that contain the keyword in their description.
+    """
+    founded_tasks = []
 
-	for task in tasks:
-		if keyword.lower() in task.get("description", "").lower():
-			founded_tasks.append(task)
+    for task in tasks:
+        if keyword.lower() in task.get("description", "").lower():
+            founded_tasks.append(task)
 
-	if not founded_tasks:
-		print(f"There is no task with '{keyword}' in description.")
-		main()
+    if not founded_tasks:
+        print(f"There is no task with '{keyword}' in description.")
+        main()
 
-	return founded_tasks
+    return founded_tasks
 
 
 def filter_tasks_by_priority(tasks, priority):
-	"""
-	Filters tasks.json by priority.
+    """
+    Filters tasks.json by priority.
 
-	Parameters:
-	tasks.json (list of dict): The current list of tasks.json.
-	priority (str): The priority level to filter by.
+    Parameters:
+    tasks.json (list of dict): The current list of tasks.json.
+    priority (str): The priority level to filter by.
 
-	Returns:
-	list of dict: Tasks with the specified priority.
-	"""
-	results_by_prio = []
-	for task in tasks:
-		if priority in task.get("priority", ""):
-			results_by_prio.append(task)
+    Returns:
+    list of dict: Tasks with the specified priority.
+    """
+    results_by_prio = []
+    for task in tasks:
+        if priority in task.get("priority", ""):
+            results_by_prio.append(task)
 
-	if not results_by_prio:
-		print(f"There is no task with priority:'{priority}' in your tasks.")
-		main()
+    if not results_by_prio:
+        print(f"There is no task with priority:'{priority}' in your tasks.")
+        main()
 
-	return results_by_prio
+    return results_by_prio
 
 
 def filter_tasks_by_status(tasks, status):
-	"""
-	Filters tasks.json by their completion status.
+    """
+    Filters tasks.json by their completion status.
 
-	Parameters:
-	tasks.json (list of dict): The current list of tasks.json.
-	status (bool): The completion status to filter by.
+    Parameters:
+    tasks.json (list of dict): The current list of tasks.json.
+    status (bool): The completion status to filter by.
 
-	Returns:
-	list of dict: Tasks with the specified completion status.
-	"""
-	results_by_status = []
-	if status == "completed":
-		status = True
-	elif status == "pending":
-		status = False
+    Returns:
+    list of dict: Tasks with the specified completion status.
+    """
+    results_by_status = []
+    if status == "completed":
+        status = True
+    elif status == "pending":
+        status = False
 
-	for task in tasks:
-		if task["completed"] == status:
-			results_by_status.append(task)
+    for task in tasks:
+        if task["completed"] == status:
+            results_by_status.append(task)
 
-	return results_by_status
+    return results_by_status
 
 
 def filter_tasks_by_deadline(tasks, deadline):
-	"""
-	Filters tasks.json by their deadline.
+    """
+    Filters tasks.json by their deadline.
 
-	Parameters:
-	tasks.json (list of dict): The current list of tasks.json.
-	deadline (str): The deadline to filter by.
+    Parameters:
+    tasks.json (list of dict): The current list of tasks.json.
+    deadline (str): The deadline to filter by.
 
-	Returns:
-	list of dict: Tasks with the specified deadline.
-	"""
-	results_by_deadline = []
-	for task in tasks:
-		if datetime.strptime(task["deadline"], '%Y-%m-%d') <= datetime.strptime(deadline, '%Y-%m-%d'):
-			results_by_deadline.append(task)
+    Returns:
+    list of dict: Tasks with the specified deadline.
+    """
+    results_by_deadline = []
+    for task in tasks:
+        if datetime.strptime(task["deadline"], '%Y-%m-%d') <= datetime.strptime(deadline, '%Y-%m-%d'):
+            results_by_deadline.append(task)
 
-	return results_by_deadline
+    return results_by_deadline
 
 
 def count_tasks(tasks):
-	"""
-	Returns the total number of tasks.json.
+    """
+    Returns the total number of tasks.json.
 
-	Parameters:
-	tasks.json (list of dict): The current list of tasks.json.
+    Parameters:
+    tasks.json (list of dict): The current list of tasks.json.
 
-	Returns:
-	int: The total number of tasks.json.
-	"""
-	return len(tasks)
+    Returns:
+    int: The total number of tasks.json.
+    """
+    return len(tasks)
 
 
 def count_completed_tasks(tasks):
-	"""
-	Returns the number of completed tasks.json.
+    """
+    Returns the number of completed tasks.json.
 
-	Parameters:
-	tasks.json (list of dict): The current list of tasks.json.
+    Parameters:
+    tasks.json (list of dict): The current list of tasks.json.
 
-	Returns:
-	int: The number of completed tasks.json
-	"""
+    Returns:
+    int: The number of completed tasks.json
+    """
 
-	status = True
-	results_by_status = filter_tasks_by_status(tasks, status)
+    status = True
+    results_by_status = filter_tasks_by_status(tasks, status)
 
-	return len(results_by_status)
+    return len(results_by_status)
 
 
 def count_pending_tasks(tasks):
-	"""
-	Returns the number of pending tasks.json.
+    """
+    Returns the number of pending tasks.json.
 
-	Parameters:
-	tasks.json (list of dict): The current list of tasks.json.
+    Parameters:
+    tasks.json (list of dict): The current list of tasks.json.
 
-	Returns:
-	int: The number of pending tasks.json.
-	"""
-	status = False
-	results_by_status = filter_tasks_by_status(tasks, status)
+    Returns:
+    int: The number of pending tasks.json.
+    """
+    status = False
+    results_by_status = filter_tasks_by_status(tasks, status)
 
-	return len(results_by_status)
+    return len(results_by_status)
 
 
 def generate_task_summary(tasks):
-	"""
-	Generates a summary report of all tasks.json.
+    """
+    Generates a summary report of all tasks.json.
 
-	Parameters:
-	tasks.json (list of dict): The current list of tasks.json.
+    Parameters:
+    tasks.json (list of dict): The current list of tasks.json.
 
-	Returns:
-	dict: A summary report containing total, completed, and pending tasks.json.
-	"""
-	summary = {
-		"Total pending tasks": count_pending_tasks(tasks),
-		"Total completed tasks": count_completed_tasks(tasks)
-	}
-	return summary
+    Returns:
+    dict: A summary report containing total, completed, and pending tasks.json.
+    """
+    summary = {
+        "Total pending tasks": count_pending_tasks(tasks),
+        "Total completed tasks": count_completed_tasks(tasks)
+    }
+    return summary
+
+
+def save_tasks_to_file(tasks, file_path):
+    """
+    Saves the task list to a file.
+
+    Parameters:
+    tasks (list of dict): The current list of tasks.
+    file_path (str): The path to the file where tasks will be saved.
+
+    Returns:
+    None
+    """
+
+
+def load_tasks_from_file(file_path):
+    """
+    Loads the task list from a file.
+
+    Parameters:
+    file_path (str): The path to the file where tasks are saved.
+
+    Returns:
+    list of dict: The loaded list of tasks.
+    """
+    f = open(file_path, "r+", encoding="utf-8")
+    tasks = json.load(f)
+
+    return tasks
 
 
 def sort_tasks_by_deadline(tasks):
-	"""
-	Sorts tasks.json by their deadline.
+    """
+    Sorts tasks.json by their deadline.
 
-	Parameters:
-	tasks.json (list of dict): The current list of tasks.json.
+    Parameters:
+    tasks.json (list of dict): The current list of tasks.json.
 
-	Returns:
-	list of dict: The sorted list of tasks.json.
-	"""
-	if not tasks:
-		print("You have no tasks")
-		main()
+    Returns:
+    list of dict: The sorted list of tasks.json.
+    """
+    if not tasks:
+        print("You have no tasks")
+        main()
 
-	tasks = sorted(tasks, key=lambda x: datetime.strptime(x["deadline"], '%Y-%m-%d'))
-	with open('tasks.json', 'w') as f:
-		json.dump(tasks, f)
-	return tasks
+    tasks = sorted(tasks, key=lambda x: datetime.strptime(x["deadline"], '%Y-%m-%d'))
+    with open('tasks.json', 'w') as f:
+        json.dump(tasks, f)
+    return tasks
 
 
 def sort_tasks_by_priority(tasks):
-	"""
-	Sorts tasks.json by their priority.
+    """
+    Sorts tasks.json by their priority.
 
-	Parameters:
-	tasks.json (list of dict): The current list of tasks.json.
+    Parameters:
+    tasks.json (list of dict): The current list of tasks.json.
 
-	Returns:
-	list of dict: The sorted list of tasks.json.
-	"""
-	if not tasks:
-		print("You have no tasks")
-		main()
+    Returns:
+    list of dict: The sorted list of tasks.json.
+    """
+    if not tasks:
+        print("You have no tasks")
+        main()
 
-	priority_as_value = {"high": 1, "medium": 2, "low": 3}
-	tasks = sorted(tasks, key=lambda x: priority_as_value[x["priority"]])
-	with open('tasks.json', 'w') as f:
-		json.dump(tasks, f)
-	return tasks
+    priority_as_value = {"high": 1, "medium": 2, "low": 3}
+    tasks = sorted(tasks, key=lambda x: priority_as_value[x["priority"]])
+    with open('tasks.json', 'w') as f:
+        json.dump(tasks, f)
+    return tasks
 
 
 def print_menu():
-	"""
-	Prints the user menu.
-	"""
-	menu = """
-	Task Manager Menu:
-	1. Add Task
-	2. Remove Task
-	3. Update Task
-	4. Get Task
-	5. Set Task Priority
-	6. Set Task Deadline
-	7. Mark Task as Completed
-	8. Set Task Description
-	9. Search Tasks by Keyword
-	10. Filter Tasks by Priority
-	11. Filter Tasks by Status
-	12. Filter Tasks by Deadline
-	13. Count Tasks
-	14. Count Completed Tasks
-	15. Count Pending Tasks
-	16. Generate Task Summary
-	17. Sort Tasks by Deadline
-	18. Sort Tasks by Priority
-	19. Exit
-	"""
-	print(menu)
+    """
+    Prints the user menu.
+    """
+    menu = """
+        Task Manager Menu:
+        1. Add Task
+        2. Remove Task
+        3. Update Task
+        4. Get Task
+        5. Set Task Priority
+        6. Set Task Deadline
+        7. Mark Task as Completed
+        8. Set Task Description
+        9. Search Tasks by Keyword
+        10. Filter Tasks by Priority
+        11. Filter Tasks by Status
+        12. Filter Tasks by Deadline
+        13. Count Tasks
+        14. Count Completed Tasks
+        15. Count Pending Tasks
+        16. Generate Task Summary
+        17. Sort Tasks by Deadline
+        18. Sort Tasks by Priority
+        19. Save Tasks to File
+        20. Load Tasks from File
+        21. Exit
+        """
+    print(menu)
 
 
 def main():
-	with open('tasks.json', 'r') as f:
-		tasks = json.load(f)
-	while True:
-		print_menu()
-		choice = input("Enter your choice: ")
-		if choice == '1':
-			try:
-				task = {
-					'id': int(input("Enter task ID: ")),
-					'description': input("Enter task description: ").capitalize(),
-					'priority': input("Enter task priority (low, medium, high): ").lower(),
-					'deadline': input("Enter task deadline (YYYY-MM-DD): "),
-					'completed': False
-				}
-				tasks = add_task(tasks, task)
-				print("Task added successfully.")
-			except ValueError:
-				print("ID must be integer")
-		elif choice == '2':
-			task_id = int(input("Enter task ID to remove: "))
-			tasks = remove_task(tasks, task_id)
-			print("Task removed successfully.")
-		elif choice == '3':
-			task_id = int(input("Enter task ID to update: "))
-			updated_task = {
-				'description': input("Enter new task description: ").capitalize(),
-				'priority': input("Enter new task priority (low, medium, high): ").lower(),
-				'deadline': input("Enter new task deadline (YYYY-MM-DD): ")
-			}
-			tasks = update_task(tasks, task_id, updated_task)
-			print("Task updated successfully.")
-		elif choice == '4':
-			task_id = int(input("Enter task ID to get: "))
-			task = get_task(tasks, task_id)
-			print("Task details:", task)
-		elif choice == '5':
-			task_id = int(input("Enter task ID to set priority: "))
-			priority = input("Enter new priority (low, medium, high): ").lower()
-			tasks = set_task_priority(tasks, task_id, priority)
-			print("Task priority set successfully.")
-		elif choice == '6':
-			task_id = int(input("Enter task ID to set deadline: "))
-			deadline = input("Enter new deadline (YYYY-MM-DD): ")
-			tasks = set_task_deadline(tasks, task_id, deadline)
-			print("Task deadline set successfully.")
-		elif choice == '7':
-			task_id = int(input("Enter task ID to mark as completed: "))
-			tasks = mark_task_as_completed(tasks, task_id)
-			print("Task marked as completed.")
-		elif choice == '8':
-			task_id = int(input("Enter task ID to set description: "))
-			description = input("Enter new description: ").capitalize()
-			tasks = set_task_description(tasks, task_id, description)
-			print("Task description set successfully.")
-		elif choice == '9':
-			keyword = input("Enter keyword to search: ").lower()
-			found_tasks = search_tasks_by_keyword(tasks, keyword)
-			print("Tasks found:", found_tasks)
-		elif choice == '10':
-			priority = input("Enter priority to filter by (low, medium, high): ")
-			filtered_tasks = filter_tasks_by_priority(tasks, priority)
-			print("Filtered tasks.json:", filtered_tasks)
-		elif choice == '11':
-			status = input("Enter status to filter by (completed/pending): ").lower() == 'completed'
-			filtered_tasks = filter_tasks_by_status(tasks, status)
-			print("Filtered tasks.json:", filtered_tasks)
-		elif choice == '12':
-			deadline = input("Enter deadline to filter by (YYYY-MM-DD): ")
-			filtered_tasks = filter_tasks_by_deadline(tasks, deadline)
-			print("Filtered tasks.json:", filtered_tasks)
-		elif choice == '13':
-			total_tasks = count_tasks(tasks)
-			print("Total number of tasks.json:", total_tasks)
-		elif choice == '14':
-			completed_tasks = count_completed_tasks(tasks)
-			print("Number of completed tasks.json:", completed_tasks)
-		elif choice == '15':
-			pending_tasks = count_pending_tasks(tasks)
-			print("Number of pending tasks.json:", pending_tasks)
-		elif choice == '16':
-			summary = generate_task_summary(tasks)
-			print("Task Summary:", summary)
-		elif choice == '17':
-			tasks = sort_tasks_by_deadline(tasks)
-			print("Tasks sorted by deadline.")
-		elif choice == '18':
-			tasks = sort_tasks_by_priority(tasks)
-			print("Tasks sorted by priority.")
-		elif choice == '19':
-			print("Exiting...")
-			break
-		else:
-			print("Invalid choice. Please try again.")
+    tasks = []
+    while True:
+        print_menu()
+        choice = input("Enter your choice: ")
+        if choice == '1':
+            try:
+                task = {
+                    'id': int(input("Enter task ID: ")),
+                    'description': input("Enter task description: ").capitalize(),
+                    'priority': input("Enter task priority (low, medium, high): ").lower(),
+                    'deadline': input("Enter task deadline (YYYY-MM-DD): "),
+                    'completed': False
+                }
+                tasks = add_task(tasks, task)
+                print("Task added successfully.")
+            except ValueError:
+                print("ID must be integer")
+        elif choice == '2':
+            task_id = int(input("Enter task ID to remove: "))
+            tasks = remove_task(tasks, task_id)
+            print("Task removed successfully.")
+        elif choice == '3':
+            task_id = int(input("Enter task ID to update: "))
+            updated_task = {
+                'description': input("Enter new task description: ").capitalize(),
+                'priority': input("Enter new task priority (low, medium, high): ").lower(),
+                'deadline': input("Enter new task deadline (YYYY-MM-DD): ")
+            }
+            tasks = update_task(tasks, task_id, updated_task)
+            print("Task updated successfully.")
+        elif choice == '4':
+            task_id = int(input("Enter task ID to get: "))
+            task = get_task(tasks, task_id)
+            print("Task details:", task)
+        elif choice == '5':
+            task_id = int(input("Enter task ID to set priority: "))
+            priority = input("Enter new priority (low, medium, high): ").lower()
+            tasks = set_task_priority(tasks, task_id, priority)
+            print("Task priority set successfully.")
+        elif choice == '6':
+            task_id = int(input("Enter task ID to set deadline: "))
+            deadline = input("Enter new deadline (YYYY-MM-DD): ")
+            tasks = set_task_deadline(tasks, task_id, deadline)
+            print("Task deadline set successfully.")
+        elif choice == '7':
+            task_id = int(input("Enter task ID to mark as completed: "))
+            tasks = mark_task_as_completed(tasks, task_id)
+            print("Task marked as completed.")
+        elif choice == '8':
+            task_id = int(input("Enter task ID to set description: "))
+            description = input("Enter new description: ").capitalize()
+            tasks = set_task_description(tasks, task_id, description)
+            print("Task description set successfully.")
+        elif choice == '9':
+            keyword = input("Enter keyword to search: ").lower()
+            found_tasks = search_tasks_by_keyword(tasks, keyword)
+            print("Tasks found:", found_tasks)
+        elif choice == '10':
+            priority = input("Enter priority to filter by (low, medium, high): ")
+            filtered_tasks = filter_tasks_by_priority(tasks, priority)
+            print("Filtered tasks.json:", filtered_tasks)
+        elif choice == '11':
+            status = input("Enter status to filter by (completed/pending): ").lower() == 'completed'
+            filtered_tasks = filter_tasks_by_status(tasks, status)
+            print("Filtered tasks.json:", filtered_tasks)
+        elif choice == '12':
+            deadline = input("Enter deadline to filter by (YYYY-MM-DD): ")
+            filtered_tasks = filter_tasks_by_deadline(tasks, deadline)
+            print("Filtered tasks.json:", filtered_tasks)
+        elif choice == '13':
+            total_tasks = count_tasks(tasks)
+            print("Total number of tasks.json:", total_tasks)
+        elif choice == '14':
+            completed_tasks = count_completed_tasks(tasks)
+            print("Number of completed tasks.json:", completed_tasks)
+        elif choice == '15':
+            pending_tasks = count_pending_tasks(tasks)
+            print("Number of pending tasks.json:", pending_tasks)
+        elif choice == '16':
+            summary = generate_task_summary(tasks)
+            print("Task Summary:", summary)
+        elif choice == '17':
+            tasks = sort_tasks_by_deadline(tasks)
+            print("Tasks sorted by deadline.")
+        elif choice == '18':
+            tasks = sort_tasks_by_priority(tasks)
+            print("Tasks sorted by priority.")
+        elif choice == '19':
+            print("Exiting...")
+            break
+        else:
+            print("Invalid choice. Please try again.")
 
 
 if __name__ == "__main__":
-	main()
+    main()
