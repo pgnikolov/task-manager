@@ -20,8 +20,6 @@ def add_task(tasks, task):
         main()
 
     tasks.append(task)
-    with open('tasks.json', 'w') as f:
-        json.dump(tasks, f, )
     return tasks
 
 
@@ -42,8 +40,6 @@ def remove_task(tasks, task_id):
         main()
 
     tasks.remove(task_to_remove[0])
-    with open('tasks.json', 'w') as f:
-        json.dump(tasks, f)
     return tasks
 
 
@@ -65,8 +61,6 @@ def update_task(tasks, task_id, updated_task):
         main()
 
     tasks[task_to_update[0]].update(updated_task)
-    with open('tasks.json', 'w') as f:
-        json.dump(tasks, f)
 
     return tasks
 
@@ -108,8 +102,6 @@ def set_task_priority(tasks, task_id, priority):
 
     tasks[task_priority[0]]["priority"] = priority
 
-    with open('tasks.json', 'w') as f:
-        json.dump(tasks, f)
     return tasks
 
 
@@ -132,8 +124,6 @@ def set_task_deadline(tasks, task_id, deadline):
 
     tasks[task_deadline[0]]["deadline"] = deadline
 
-    with open('tasks.json', 'w') as f:
-        json.dump(tasks, f)
     return tasks
 
 
@@ -155,8 +145,6 @@ def mark_task_as_completed(tasks, task_id):
 
     tasks[task_complete[0]]["completed"] = True
 
-    with open('tasks.json', 'w') as f:
-        json.dump(tasks, f)
     return tasks
 
 
@@ -179,8 +167,6 @@ def set_task_description(tasks, task_id, description):
 
     tasks[task_desciption[0]]["description"] = description
 
-    with open('tasks.json', 'w') as f:
-        json.dump(tasks, f)
     return tasks
 
 
@@ -344,10 +330,16 @@ def save_tasks_to_file(tasks, file_path):
     Parameters:
     tasks (list of dict): The current list of tasks.
     file_path (str): The path to the file where tasks will be saved.
-
     Returns:
     None
     """
+    try:
+        f = open(file_path, 'w', encoding='utf-8')
+        json.dump(tasks, f, indent=4, encoding="utf-8")
+        f.close()
+    except FileNotFoundError:
+        print(f"The file path '{file_path}' does not exist.")
+        main()
 
 
 def load_tasks_from_file(file_path):
@@ -360,10 +352,14 @@ def load_tasks_from_file(file_path):
     Returns:
     list of dict: The loaded list of tasks.
     """
-    f = open(file_path, "r+", encoding="utf-8")
-    tasks = json.load(f)
+    try:
+        f = open(file_path, "r+", encoding="utf-8")
+        tasks = json.load(f)
+        return tasks
 
-    return tasks
+    except FileNotFoundError:
+        print(f"The file path -'{file_path}' does not exist.")
+    main()
 
 
 def sort_tasks_by_deadline(tasks):
@@ -412,28 +408,28 @@ def print_menu():
     Prints the user menu.
     """
     menu = """
-        Task Manager Menu:
-        1. Add Task
-        2. Remove Task
-        3. Update Task
-        4. Get Task
-        5. Set Task Priority
-        6. Set Task Deadline
-        7. Mark Task as Completed
-        8. Set Task Description
-        9. Search Tasks by Keyword
-        10. Filter Tasks by Priority
-        11. Filter Tasks by Status
-        12. Filter Tasks by Deadline
-        13. Count Tasks
-        14. Count Completed Tasks
-        15. Count Pending Tasks
-        16. Generate Task Summary
-        17. Sort Tasks by Deadline
-        18. Sort Tasks by Priority
-        19. Save Tasks to File
-        20. Load Tasks from File
-        21. Exit
+    Task Manager Menu:
+    1. Add Task
+    2. Remove Task
+    3. Update Task
+    4. Get Task
+    5. Set Task Priority
+    6. Set Task Deadline
+    7. Mark Task as Completed
+    8. Set Task Description
+    9. Search Tasks by Keyword
+    10. Filter Tasks by Priority
+    11. Filter Tasks by Status
+    12. Filter Tasks by Deadline
+    13. Count Tasks
+    14. Count Completed Tasks
+    15. Count Pending Tasks
+    16. Generate Task Summary
+    17. Save Tasks to File
+    18. Load Tasks from File
+    19. Sort Tasks by Deadline
+    20. Sort Tasks by Priority
+    21. Exit
         """
     print(menu)
 
@@ -521,12 +517,20 @@ def main():
             summary = generate_task_summary(tasks)
             print("Task Summary:", summary)
         elif choice == '17':
+            file_path = input("Enter file path to save tasks: ")
+            save_tasks_to_file(tasks, file_path)
+            print("Tasks saved to file.")
+        elif choice == '18':
+            file_path = input("Enter file path to load tasks from: ")
+            tasks = load_tasks_from_file(file_path)
+            print("Tasks loaded from file.")
+        elif choice == '19':
             tasks = sort_tasks_by_deadline(tasks)
             print("Tasks sorted by deadline.")
-        elif choice == '18':
+        elif choice == '20':
             tasks = sort_tasks_by_priority(tasks)
             print("Tasks sorted by priority.")
-        elif choice == '19':
+        elif choice == '21':
             print("Exiting...")
             break
         else:
