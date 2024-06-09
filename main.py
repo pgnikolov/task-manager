@@ -13,11 +13,6 @@ def add_task(tasks, task):
     Returns:
     list of dict: Updated tasks.json.
     """
-    existing_ids = [t["id"] for t in tasks]
-
-    if task["id"] in existing_ids:
-        print(f"You already have task with ID {task['id']}!")
-        main()
 
     tasks.append(task)
     return tasks
@@ -334,12 +329,11 @@ def save_tasks_to_file(tasks, file_path):
     None
     """
     try:
-        f = open(file_path, 'w')
-        json.dump(tasks, f, indent=4, )
+        f = open(file_path, 'r+')
+        json.dump(tasks, f)
         f.close()
     except FileNotFoundError:
         print(f"The file path '{file_path}' does not exist.")
-        main()
 
 
 def load_tasks_from_file(file_path):
@@ -353,13 +347,12 @@ def load_tasks_from_file(file_path):
     list of dict: The loaded list of tasks.
     """
     try:
-        f = open(file_path, "r+")
+        f = open(file_path, "r")
         tasks = json.load(f)
         return tasks
 
     except FileNotFoundError:
         print(f"The file path -'{file_path}' does not exist.")
-    main()
 
 
 def sort_tasks_by_deadline(tasks):
@@ -522,7 +515,7 @@ def main():
         if choice == '1':
             try:
                 task = {
-                    'id': id_validation(task_id=input("Enter task ID: ")),
+                    'id': id_validation(task_id=int(input("Enter task ID: "))),
                     'description': description_validation(description=input("Enter task description: ").capitalize()),
                     'priority': priority_validation(priority=input("Enter task priority (low, medium, high): ").lower()),
                     'deadline': deadline_validation(deadline=input("Enter deadline (DD-MM-YYYY): ")),
@@ -558,7 +551,7 @@ def main():
             tasks = set_task_deadline(tasks, task_id, deadline)
             print("Task deadline set successfully.")
         elif choice == '7':
-            task_id = id(int(input("Enter task ID to mark as completed: ")))
+            task_id = id_validation(int(input("Enter task ID to mark as completed: ")))
             tasks = mark_task_as_completed(tasks, task_id)
             print("Task marked as completed.")
         elif choice == '8':
