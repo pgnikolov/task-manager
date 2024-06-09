@@ -254,7 +254,7 @@ def filter_tasks_by_deadline(tasks, deadline):
     """
     results_by_deadline = []
     for task in tasks:
-        if datetime.strptime(task["deadline"], '%Y-%m-%d') <= datetime.strptime(deadline, '%Y-%m-%d'):
+        if datetime.strptime(task["deadline"], '%d-%m-%Y') <= datetime.strptime(deadline, '%d-%m-%Y'):
             results_by_deadline.append(task)
 
     return results_by_deadline
@@ -334,8 +334,8 @@ def save_tasks_to_file(tasks, file_path):
     None
     """
     try:
-        f = open(file_path, 'w', encoding='utf-8')
-        json.dump(tasks, f, indent=4, encoding="utf-8")
+        f = open(file_path, 'w')
+        json.dump(tasks, f, indent=4, )
         f.close()
     except FileNotFoundError:
         print(f"The file path '{file_path}' does not exist.")
@@ -353,7 +353,7 @@ def load_tasks_from_file(file_path):
     list of dict: The loaded list of tasks.
     """
     try:
-        f = open(file_path, "r+", encoding="utf-8")
+        f = open(file_path, "r+")
         tasks = json.load(f)
         return tasks
 
@@ -376,9 +376,8 @@ def sort_tasks_by_deadline(tasks):
         print("You have no tasks")
         main()
 
-    tasks = sorted(tasks, key=lambda x: datetime.strptime(x["deadline"], '%Y-%m-%d'))
-    with open('tasks.json', 'w') as f:
-        json.dump(tasks, f)
+    tasks = sorted(tasks, key=lambda x: datetime.strptime(x["deadline"], '%d-%m-%Y'))
+
     return tasks
 
 
@@ -398,9 +397,90 @@ def sort_tasks_by_priority(tasks):
 
     priority_as_value = {"high": 1, "medium": 2, "low": 3}
     tasks = sorted(tasks, key=lambda x: priority_as_value[x["priority"]])
-    with open('tasks.json', 'w') as f:
-        json.dump(tasks, f)
+
     return tasks
+
+
+def id_validation(task_id):
+    """
+    Validate user id input as innteger.
+    Args:
+        task_id: The user id.
+    Returns:
+        task_id(int): After validation.
+    """
+    if type(task_id) is not int:
+        while True:
+            try:
+                task_id = int(input("Enter a task ID: "))
+                break
+            except ValueError:
+                print("Invalid input. Task ID must be an integer.")
+
+    return task_id
+
+
+def description_validation(description):
+    """
+    Validate user description input is not empty string.
+    Args:
+        description (str): The user description.
+    Returns:
+        description(str): After confirmation it is not an empty string.
+    """
+    if not description:
+        print("Description can't be empty.")
+        while True:
+            description = input("Enter a task description: ").capitalize()
+            if description:
+                break
+            else:
+                print("Invalid input. Task description can't be empty.")
+    return description
+
+
+def priority_validation(priority):
+    """
+    Validate user priority input to be one of low, medium or high.
+    Args:
+        priority (str): The priority to validate.
+    Returns:
+        priority(str): After confirmation.
+    """
+    if priority not in ["low", "medium", "high"]:
+        print("Your choice must be one of low, medium or high.")
+        while True:
+            priority = input("Enter task priority (low, medium, high): ").lower()
+            if priority in ["low", "medium", "high"]:
+                break
+            else:
+                print("Invalid input. Task priority must be 'low', 'medium' or 'high'.")
+
+    return priority
+
+
+def deadline_validation(deadline):
+    """
+    Validate the date format YYYY-MM-DD and check if it's not earlier than today's date.
+    Args:
+        deadline (str): The deadline to validate.
+    Returns:
+        deadline(str): After confirmation.
+    """
+    while True:
+        try:
+            date = datetime.strptime(deadline, '%d-%m-%Y')
+            if date.date() >= datetime.today().date():
+                break
+            elif date.date() < datetime.today().date():
+                print("Deadline can't be earlier than today's date.")
+                deadline = input("Enter deadline (DD-MM-YYYY): ")
+        except ValueError:
+            print("Invalid date format. Please enter date in format DD-MM-YYYY.")
+            deadline = input("Enter deadline in format (DD-MM-YYYY): ")
+
+    deadline = date.strftime('%d-%m-%Y')
+    return deadline
 
 
 def print_menu():
@@ -442,10 +522,10 @@ def main():
         if choice == '1':
             try:
                 task = {
-                    'id': int(input("Enter task ID: ")),
-                    'description': input("Enter task description: ").capitalize(),
-                    'priority': input("Enter task priority (low, medium, high): ").lower(),
-                    'deadline': input("Enter task deadline (YYYY-MM-DD): "),
+                    'id': id_validation(task_id=input("Enter task ID: ")),
+                    'description': description_validation(description=input("Enter task description: ").capitalize()),
+                    'priority': priority_validation(priority=input("Enter task priority (low, medium, high): ").lower()),
+                    'deadline': deadline_validation(deadline=input("Enter deadline (DD-MM-YYYY): ")),
                     'completed': False
                 }
                 tasks = add_task(tasks, task)
@@ -453,39 +533,37 @@ def main():
             except ValueError:
                 print("ID must be integer")
         elif choice == '2':
-            task_id = int(input("Enter task ID to remove: "))
+            task_id = id_validation(int(input("Enter task ID to remove: ")))
             tasks = remove_task(tasks, task_id)
             print("Task removed successfully.")
         elif choice == '3':
-            task_id = int(input("Enter task ID to update: "))
-            updated_task = {
-                'description': input("Enter new task description: ").capitalize(),
-                'priority': input("Enter new task priority (low, medium, high): ").lower(),
-                'deadline': input("Enter new task deadline (YYYY-MM-DD): ")
-            }
+            task_id = id_validation(int(input("Enter task ID to update: ")))
+            updated_task = {'description': description_validation(input("Enter new task description: ").capitalize()),
+                            'priority': priority_validation(input("Enter new priority (low, medium, high): ").lower()),
+                            'deadline': deadline_validation(input("Enter new task deadline (DD-MM-YYYY): "))}
             tasks = update_task(tasks, task_id, updated_task)
             print("Task updated successfully.")
         elif choice == '4':
-            task_id = int(input("Enter task ID to get: "))
+            task_id = id_validation(int(input("Enter task ID to get: ")))
             task = get_task(tasks, task_id)
             print("Task details:", task)
         elif choice == '5':
-            task_id = int(input("Enter task ID to set priority: "))
-            priority = input("Enter new priority (low, medium, high): ").lower()
+            task_id = id_validation(int(input("Enter task ID to set priority: ")))
+            priority = priority_validation(input("Enter new priority (low, medium, high): ").lower())
             tasks = set_task_priority(tasks, task_id, priority)
             print("Task priority set successfully.")
         elif choice == '6':
-            task_id = int(input("Enter task ID to set deadline: "))
-            deadline = input("Enter new deadline (YYYY-MM-DD): ")
+            task_id = id_validation(int(input("Enter task ID to set deadline: ")))
+            deadline = deadline_validation(input("Enter new deadline (DD-MM-YYYY): "))
             tasks = set_task_deadline(tasks, task_id, deadline)
             print("Task deadline set successfully.")
         elif choice == '7':
-            task_id = int(input("Enter task ID to mark as completed: "))
+            task_id = id(int(input("Enter task ID to mark as completed: ")))
             tasks = mark_task_as_completed(tasks, task_id)
             print("Task marked as completed.")
         elif choice == '8':
-            task_id = int(input("Enter task ID to set description: "))
-            description = input("Enter new description: ").capitalize()
+            task_id = id_validation(int(input("Enter task ID to set description: ")))
+            description = description_validation(input("Enter new description: ").capitalize())
             tasks = set_task_description(tasks, task_id, description)
             print("Task description set successfully.")
         elif choice == '9':
@@ -493,7 +571,7 @@ def main():
             found_tasks = search_tasks_by_keyword(tasks, keyword)
             print("Tasks found:", found_tasks)
         elif choice == '10':
-            priority = input("Enter priority to filter by (low, medium, high): ")
+            priority = priority_validation(input("Enter priority to filter by (low, medium, high): "))
             filtered_tasks = filter_tasks_by_priority(tasks, priority)
             print("Filtered tasks.json:", filtered_tasks)
         elif choice == '11':
@@ -501,7 +579,7 @@ def main():
             filtered_tasks = filter_tasks_by_status(tasks, status)
             print("Filtered tasks.json:", filtered_tasks)
         elif choice == '12':
-            deadline = input("Enter deadline to filter by (YYYY-MM-DD): ")
+            deadline = deadline_validation(input("Enter deadline to filter by (DD-MM-YYYY): "))
             filtered_tasks = filter_tasks_by_deadline(tasks, deadline)
             print("Filtered tasks.json:", filtered_tasks)
         elif choice == '13':
