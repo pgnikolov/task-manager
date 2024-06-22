@@ -50,20 +50,23 @@ python main.py
 ```
 Follow the on-screen menu to perform various task management operations.
 
+## Modules 📂
 
-## Task Operations 🔄
+### **Task Module** 
+The `task.py` module defines the `Task` class, which represents a task in the task manager. It includes validation methods and conversion methods for task attributes.
 
-`add_task(tasks, task)`: Adds a new task to the list.
+### **TaskManager Module**
+The `task_manager.py` module defines the `TaskManager` class, which manages a list of tasks and provides methods to add, remove, update, filter, sort, and save/load tasks.
 
-<details>
-  <summary>More...</summary>
- 
-  - Parameters:
-    - `tasks` (list of dict): The current list of tasks.
-    - `task` (dict): The task to be added.
-  - Returns: Updated list of tasks.
-   
-</details>
+### **Main Script**
+The `main.py` script provides a command-line interface for interacting with the `TaskManager`. It includes a menu for performing various task management operations.
+
+
+
+## TaskManager 🔄
+
+`add_task(task: Task) -> None` Adds a new task to the list.
+
 
 
 `remove_task(tasks, task_id)`: Removes a task by its ID.
