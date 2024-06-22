@@ -36,14 +36,14 @@ A simple command-line task manager application written in Python. This project a
 ### Prerequisites
 - Python 3.x
 
-## Installation
+## Installation ⚙️
 1. Clone the repository:
 ```bash
 git clone https://github.com/yourusername/task-manager.git
 cd task-manager
 ```
 
-## Usage
+## Usage ✍️
 Run the main script to start the task manager:
 ```bash
 python main.py
@@ -67,243 +67,169 @@ The `main.py` script provides a command-line interface for interacting with the 
 
 `add_task(task: Task) -> None` Adds a new task to the list.
 
+<details>
+  <summary>More...</summary>
+ 
+    - Parameters:
+       - `task (Task)`: The task to be added.
+       
+</details>
 
-
-`remove_task(tasks, task_id)`: Removes a task by its ID.
+`remove_task(task_id: int) -> None`: Removes a task by its ID.
 
 <details>
   <summary>More...</summary>
  
   - Parameters:
-    - `tasks` (list of dict): The current list of tasks.
     - `task_id` (int): The ID of the task to be removed.
-  - Returns: Updated list of tasks.
-   
+         
 </details>
 
 
-`update_task(tasks, task_id, updated_task)`: Updates an existing task.
+`update_task(task_id: int, updated_task: dict) -> None`: Updates an existing task.
 
 <details>
   <summary>More...</summary>
  
   - Parameters:
-    - `tasks` (list of dict): The current list of tasks.
     - `task_id` (int): The ID of the task to be updated.
     - `updated_task` (dict): The updated task details.
-  - Returns: Updated list of tasks.
    
 </details>
 
 
-`get_task(tasks, task_id)`: Retrieves a task by its ID.
+`get_task_by_id(task_id: int) -> Task`: Retrieves a task by its ID.
 
 <details>
   <summary>More...</summary>
  
   - Parameters:
-    - `tasks` (list of dict): The current list of tasks.
     - `task_id` (int): The ID of the task to be retrieved.
-  - Returns: The task details.
-   
+    
 </details>
 
 
-`save_tasks_to_file(tasks, file_path)`: Saves the provided list of tasks to a specified file path.
+`save_tasks_to_file(file_path: str) -> None`: Saves the provided list of tasks to a specified file path.
 
 <details>
   <summary>More...</summary>
  
   - Parameters:
-      - tasks (list of dict): The current list of tasks.
-      - file_path (str): The path to the file where tasks will be saved.
-  - Returns:
-      - None
+      - `file_path` (str): The path to the file where tasks will be saved.
    
+</details>
+
+`load_tasks_from_file(file_path: str) -> None`: Loads the list of tasks from a specified file path.
+
+<details>
+  <summary>More...</summary>
+   
+    - Parameters:
+       - `file_path (str)`: The path to the file from which tasks will be loaded.
+       
 </details>
 
 ## Task Attribute Operations 🧰
 
-`set_task_priority(tasks, task_id, priority)`: Sets the priority of a task.
+`set_task_priority(task_id: int, priority: str) -> None`: Sets the priority of a task.
 
 <details>
   <summary>More...</summary>
  
   - Parameters:
-     - `tasks` (list of dict): The current list of tasks.
      - `task_id` (int): The ID of the task to be updated.
      - `priority` (str): The new priority level.
-  - Returns: Updated list of tasks.
    
 </details>
 
-`set_task_deadline(tasks, task_id, deadline)`: Sets the deadline for a task.
+`set_task_deadline(task_id: int, deadline: str) -> None`: Sets the deadline for a task.
 
 <details>
   <summary>More...</summary>
  
   - Parameters:
-     - `tasks` (list of dict): The current list of tasks.
      - `task_id` (int): The ID of the task to be updated.
      - `deadline` (str): The new deadline.
-  - Returns: Updated list of tasks.
    
 </details>
 
-`mark_task_as_completed(tasks, task_id)`: Marks a task as completed.
+`mark_task_as_completed(task_id: int)-> None`: Marks a task as completed.
 
 <details>
   <summary>More...</summary>
  
   - Parameters:
-     - `tasks` (list of dict): The current list of tasks.
      - `task_id` (int): The ID of the task to be marked as completed.
-  - Returns: Updated list of tasks.
-   
+    
 </details>
 
-`set_task_description(tasks, task_id, description)`: Sets the description for a task.
+`set_task_description(task_id: int, description: str) -> None`: Sets the description for a task.
 
 <details>
   <summary>More...</summary>
  
   - Parameters:
-     - `tasks` (list of dict): The current list of tasks.
      - `task_id` (int): The ID of the task to be updated.
      - `description` (str): The new description.
-  - Returns: Updated list of tasks.
    
-</details>
-
-`load_tasks_from_file(file_path)`: Loads the list of tasks from a specified file path.
-
-<details>
-  <summary>More...</summary>
- 
-  - Parameters:
-     - `tasks` (list of dict): The current list of tasks.
-     - `task_id` (int): The ID of the task to be updated.
-     - `description` (str): The new description.
-  - Returns: Updated list of tasks.
-   
-</details>
 
 ## Task Filtering and Searching 📑
 
-`search_tasks_by_keyword(tasks, keyword)`: Searches tasks by a keyword in the description.
+`search_tasks_by_keyword(keyword: str) -> list`: Searches tasks by a keyword in the description.
 
 <details>
   <summary>More...</summary>
  
   - Parameters:
-      - `tasks` (list of dict): The current list of tasks.
       - `keyword` (str): The keyword to search for.
-  - Returns: Tasks that contain the keyword in their description.
-   
+          
 </details>
 
-`filter_tasks_by_priority(tasks, priority)`: Filters tasks by priority.
+`filter_tasks_by_priority(priority: str) -> list`: Filters tasks by priority.
 
 <details>
   <summary>More...</summary>
  
   - Parameters:
-     - `tasks` (list of dict): The current list of tasks.
      - `priority` (str): The priority level to filter by.
-  - Returns: Tasks with the specified priority.
    
 </details>
 
-`filter_tasks_by_status(tasks, status)`: Filters tasks by their completion status.
+`filter_tasks_by_status(status: str) -> list`: Filters tasks by their completion status.
 
 <details>
   <summary>More...</summary>
  
   - Parameters:
-     - `tasks` (list of dict): The current list of tasks.
-     - `status` (bool): The completion status to filter by.
-  - Returns: Tasks with the specified completion status.
+     - `status` (str): The completion status to filter by.
    
 </details>
 
-`filter_tasks_by_deadline(tasks, deadline)`: Filters tasks by their deadline.
+`filter_tasks_by_deadline(deadline: str) -> list`: Filters tasks by their deadline.
 
 <details>
   <summary>More...</summary>
  
   - Parameters:
-     - `tasks` (list of dict): The current list of tasks.
      - `deadline` (str): The deadline to filter by.
-  - Returns: Tasks with the specified deadline.
-   
+       
 </details>
 
 ## Task Counting and Summarizing 🧮
 
-`count_tasks(tasks)`: Returns the total number of tasks.
+`count_tasks() ->`: Returns the total number of tasks.
 
-<details>
-  <summary>More...</summary>
- 
-  - Parameters:
-     - `tasks` (list of dict): The current list of tasks.
-  - Returns: The total number of tasks.
-   
-</details>
+`count_completed_tasks() -> int`: Returns the number of completed tasks.
 
-`count_completed_tasks(tasks)`: Returns the number of completed tasks.
+`count_pending_tasks() -> int`: Returns the number of pending tasks.
 
-<details>
-  <summary>More...</summary>
- 
-  - Parameters:
-     - `tasks` (list of dict): The current list of tasks.
-  - Returns: The number of completed tasks.
-   
-</details>
-
-`count_pending_tasks(tasks)`: Returns the number of pending tasks.
-
-<details>
-  <summary>More...</summary>
- 
-  - Parameters:
-     - `tasks` (list of dict): The current list of tasks.
-  - Returns: The number of pending tasks.
-
-</details>
-
-`generate_task_summary(tasks)`: Generates a summary report of all tasks.
-
-<details>
-  <summary>More...</summary>
- 
-  - Parameters:
-     - `tasks` (list of dict): The current list of tasks.
-  - Returns: A summary report containing total, completed, and pending tasks.
-
-</details>
+`generate_task_summary() -> dict`: Generates a summary report of all tasks.
 
 ### Task Sorting 📑
 
-`sort_tasks_by_deadline(tasks)`: Sorts tasks by their deadline.
+`sort_tasks_by_deadline() -> None`: Sorts tasks by their deadline.
 
-<details>
-  <summary>More...</summary>
- 
-  - Parameters:
-     - `tasks` (list of dict): The current list of tasks.
-  - Returns: The sorted list of tasks.
-</details>
-
-`sort_tasks_by_priority(tasks)`: Sorts tasks by their priority.
-
-<details>
-  <summary>More...</summary>
- 
-  - Parameters:
-     - `tasks` (list of dict): The current list of tasks.
-  - Returns: The sorted list of tasks.
+`sort_tasks_by_priority()-> None`: Sorts tasks by their priority.
     
 </details>
 
