@@ -118,7 +118,7 @@ class Task:
             raise ValueError("Invalid date format. Please enter date in format DD-MM-YYYY.")
         return deadline
 
-    def task_to_dict(self):
+    def to_dict(self):
         """
             Converts the task to a dictionary representation.
         Returns:
