@@ -2,16 +2,15 @@ from datetime import datetime
 
 
 def deadline_to_date(func):
-    def wrapper(*args, **kwargs):
-        deadline_str = args[1]  # Assuming deadline is the second argument after self
-
+    def wrapper(self, deadline_str, *args, **kwargs):
         try:
             deadline_date = datetime.strptime(deadline_str, '%d-%m-%Y').date()
-            return func(*args, **kwargs)
+            return func(self, deadline_date, *args, **kwargs)
         except ValueError:
             raise ValueError("Invalid date format. Please enter date in format DD-MM-YYYY.")
 
     return wrapper
+
 
 class Task:
     priorities = ["low", "medium", "high"]
@@ -31,7 +30,7 @@ class Task:
 
     @deadline_to_date
     def set_task_deadline(self, deadline):
-        if deadline > datetime.today():
+        if deadline > datetime.today().date():
             self.deadline = deadline
             return f"Deadline set to {self.deadline}"
         else:
