@@ -11,6 +11,7 @@ class Task:
         priority (int): Task priority - low, medium or high
         deadline (datetime): Task deadline in format DD-MM-YYYY
         completed (bool): Task completion status.
+        PRIORITIES (list): Possible options for task priority.
     """
     PRIORITIES = ["low", "medium", "high"]
 
@@ -30,9 +31,7 @@ class Task:
     def set_deadline(self, deadline):
         if deadline:
             try:
-                # Parse deadline string in DD-MM-YYYY format
                 deadline_date = datetime.strptime(deadline, "%d-%m-%Y")
-                # Ensure deadline is in the future
                 if deadline_date > datetime.now():
                     self.deadline = deadline_date
                 else:
@@ -72,7 +71,7 @@ class TaskManager:
         if task_id in self.tasks:
             del self.tasks[task_id]
         else:
-            print("Task not found!")
+            return "Task not found!"
 
     def update_task(self, task_id, updated_task):
         """
@@ -84,7 +83,7 @@ class TaskManager:
         if task_id in self.tasks:
             self.tasks[task_id] = updated_task
         else:
-            print("Task not found!")
+            return "Task not found!"
 
     def get_task(self, task_id):
         """
@@ -94,7 +93,10 @@ class TaskManager:
         Returns:
             Task: The task with the given ID, or None if not found.
         """
-        return self.tasks.get(task_id)
+        if task_id in self.tasks:
+            return self.tasks.get(task_id)
+        else:
+            return f"Task with id {task_id} not found!"
 
     def set_task_priority(self, task_id, priority):
         """
@@ -102,11 +104,13 @@ class TaskManager:
         Args:
             task_id: The ID of the task to update.
             priority (str): The new priority for the task.
+        Returns:
+            str: A message if task with task_id doesn't exist.
         """
         if task_id in self.tasks:
             self.tasks[task_id].priority = priority
         else:
-            print("Task not found!")
+            return f"Task with id {task_id} not found!"
 
     def set_task_deadline(self, task_id, deadline):
         """
@@ -114,22 +118,26 @@ class TaskManager:
         Args:
             task_id: The ID of the task to update.
             deadline (str): The new deadline for the task.
+        Returns:
+            str: A message if task with task_id doesn't exist.
         """
         if task_id in self.tasks:
             self.tasks[task_id].deadline = deadline
         else:
-            print("Task not found!")
+            return f"Task with id {task_id} not found!"
 
     def mark_task_as_completed(self, task_id):
         """
             Marks a task as completed.
         Args:
             task_id: The ID of the task to update.
+        Returns:
+            str: A message if task with task_id doesn't exist.
         """
         if task_id in self.tasks:
             self.tasks[task_id].completed = True
         else:
-            print("Task not found!")
+            return f"Task with id {task_id} not found!"
 
     def set_task_description(self, task_id, description):
         """
@@ -137,11 +145,13 @@ class TaskManager:
         Args:
             task_id: The ID of the task to update.
             description (str): The new description for the task.
+        Returns:
+            str: A message if task with task_id doesn't exist.
         """
         if task_id in self.tasks:
             self.tasks[task_id].description = description
         else:
-            print("Task not found!")
+            return f"Task with id {task_id} not found!"
 
     def search_tasks_by_keyword(self, keyword):
         """
@@ -150,8 +160,13 @@ class TaskManager:
             keyword (str): The keyword to search for.
         Returns:
             list: A list of tasks that contain the keyword in their descriptions.
+            str: A message if tasks with keyword in their descriptions are found.
         """
-        return [task for task in self.tasks.values() if keyword.lower() in task.description.lower()]
+        task_keyword = [task for task in self.tasks.values() if keyword.lower() in task.description.lower()]
+        if not task_keyword:
+            return f"No tasks found with keyword in their description '{keyword}'!"
+        else:
+            return task_keyword
 
     def filter_tasks_by_priority(self, priority):
         """
@@ -160,18 +175,29 @@ class TaskManager:
             priority (str): The priority to filter tasks by.
         Returns:
             list: A list of tasks with the given priority.
+            str: A message if the given priority is not valid.
         """
-        return [task for task in self.tasks.values() if task.priority == priority]
+        if priority in Task.PRIORITIES:
+            return [task for task in self.tasks.values() if task.priority == priority]
+        else:
+            return f"{priority} is not a valid priority."
 
-    def filter_tasks_by_status(self, status):
+    def filter_completed(self, status):
         """
             Filters tasks by their completion status.
         Args:
             status (str): The status to filter tasks by ('completed' or 'pending').
         Returns:
             list: A list of tasks with the given status.
+            str: A message if the given status is not valid.
         """
-        return [task for task in self.tasks.values() if task.completed == status]
+        if status == 'completed':
+            completed_tasks = [task for task in self.tasks.values() if task.completed]
+        elif status == 'pending':
+            completed_tasks = [task for task in self.tasks.values() if not task.completed]
+        else:
+            return f"{status} is not a valid status."
+        return completed_tasks
 
     def filter_tasks_by_deadline(self, deadline):
         """
@@ -188,24 +214,38 @@ class TaskManager:
             Counts the total number of tasks.
         Returns:
             int: The total number of tasks.
+            str: A message if there is no tasks found.
         """
-        return len(self.tasks)
+        if self.tasks:
+            return len(self.tasks)
+        else:
+            return "No tasks found."
 
     def count_completed_tasks(self):
         """
             Counts the number of completed tasks.
         Returns:
             int: The number of completed tasks.
+            str: A message if completed tasks are not found.
         """
-        return sum(task.completed for task in self.tasks.values())
+        completed_tasks = self.filter_completed('completed')
+        if not completed_tasks:
+            return "No completed tasks found."
+        else:
+            return len(completed_tasks)
 
     def count_pending_tasks(self):
         """
             Counts the number of pending tasks.
         Returns:
             int: The number of pending tasks.
+            str: A message if pending tasks are not found.
         """
-        return self.count_tasks() - self.count_completed_tasks()
+        pending_tasks = self.filter_tasks_by_priority('pending')
+        if not pending_tasks:
+            return "No pending tasks found."
+        else:
+            return len(pending_tasks)
 
     def generate_task_summary(self):
         """
@@ -243,14 +283,38 @@ class TaskManager:
 
     def sort_tasks_by_deadline(self, ascending=True):
         """
-        Sorts tasks by their deadlines in ascending order.
+            Sorts tasks by their deadlines in ascending order.
+        Args:
+            ascending (bool): Sort tasks by their deadlines in ascending order or not.
+        Returns:
+            str: A msg if there are task with not valid or missing deadlines.
+            str: A message with all tasks sorted by their deadlines.
         """
         tasks = list(self.tasks.values())
-        tasks.sort(key=lambda task: task.deadline, reverse=not ascending)
-        self.tasks = {task.id: task for task in tasks}
+        tasks_with_deadlines = []
+        for task in tasks:
+            if hasattr(task, 'deadline') and task.deadline is not None:
+                tasks_with_deadlines.append(task)
+            else:
+                print(f"Task {task.id} does not have a valid deadline.")
+        tasks_with_deadlines.sort(key=lambda task: task.deadline, reverse=not ascending)
+        print("Sorted tasks with valid deadlines:")
+        for task in tasks_with_deadlines:
+            print(f"Task ID: {task.id}, Description: {task.description}, Deadline: {task.deadline}")
 
-    def sort_tasks_by_priority(self):
-        """Sorts tasks by their priorities in the order 'low', 'medium', 'high'."""
-        tasks = list(self.tasks.values())
-        tasks.sort(key=lambda task: task.priority, reverse=False)
-        self.tasks = {task.id: task for task in tasks}
+    def sort_tasks_by_priority(self, ascending=True):
+        """
+        Sorts tasks by their priorities in ascending order.
+
+        Args:
+            ascending (bool): Sort tasks by their priorities in ascending order or not.
+
+        Returns:
+            str: A message with all tasks sorted by their priorities.
+        """
+        priority_order = {'low': 1, 'medium': 2, 'high': 3}
+        sorted_tasks = sorted(self.tasks, key=lambda x: priority_order[x['priority']], reverse=not ascending)
+        result = "Tasks sorted by priority:\n"
+        for task in sorted_tasks:
+            result += f"Task: {task['name']}, Priority: {task['priority']}\n"
+        return result.strip()
