@@ -1,40 +1,31 @@
-# Task Manager 📑	
+# Task Manager Application 📑	
 
  <img src="https://github.com/pgnikolov/task-manager/assets/151896883/9324d27a-9ef9-4a0c-9e02-f74876ce36f9" width="750" height="400">
  
-A simple command-line task manager application written in Python. This project allows users to manage tasks by adding, updating, removing, and filtering tasks based on various criteria.
+## Introduction
 
-## Features 🧰
+This application is designed to help you organize and manage tasks effectively. Whether you're managing personal tasks, team projects, or daily activities, this tool provides a simple way to track tasks, set priorities, manage deadlines, and monitor completion status.
 
-* :heavy_plus_sign: Add Task: Add new tasks to the list.
-* :x: Remove Task: Remove tasks by their ID.
-* :arrows_counterclockwise: Update Task: Update task details such as description, priority, and deadline.
-* :mag: Get Task: Retrieve task details by their ID.
-* :chart_with_upwards_trend: Set Task Priority: Set the priority of a task.
-* :alarm_clock: Set Task Deadline: Set the deadline for a task.
-* :white_check_mark: Mark Task as Completed: Mark tasks as completed.
-* :memo: Set Task Description: Set or update the description of a task.
-* :mag_right: Search Tasks by Keyword: Search tasks by a keyword in their description.
-* :pushpin: Filter Tasks by Priority: Filter tasks by their priority.
-* :vertical_traffic_light: Filter Tasks by Status: Filter tasks by their completion status (completed or pending).
-* :calendar: Filter Tasks by Deadline: Filter tasks by their deadline.
-* :1234: Count Tasks: Get the total number of tasks.
-* :ballot_box_with_check: Count Completed Tasks: Get the number of completed tasks.
-* :hourglass_flowing_sand: Count Pending Tasks: Get the number of pending tasks.
-* :bar_chart: Generate Task Summary: Generate a summary report of all tasks.
-* :floppy_disk: Save Tasks: Saves tasks to json file.
-* :inbox_tray: Load Tasks: Loads saved tasks from file.
-* :arrow_heading_down: Sort Tasks by Deadline: Sort tasks by their deadline.
-* :arrow_heading_up: Sort Tasks by Priority: Sort tasks by their priority.
-* :id: ID Validation: Ensure the id number is integer.
-* :1234: Priority Validation: Checks if the priority entered by user is one of "low","medium" or "high".
-* :alarm_clock: Deadline Validation: Checks the date format and if the date is not past.
-* :memo: Description Validation: Checks if the description is not empty string.
+## Table of Contents
 
-## Getting Started 💻
+- Requirements 
+- Recommended Modules 
+- Installation 
+- Configuration 
+- Usage 
+- Troubleshooting & FAQ 
+- Maintainers 
+- Contributing
+- License
 
-### Prerequisites
-- Python 3.x
+## Requirements
+
+To run the Task Manager application, ensure your environment meets the following requirements:
+- Python: Version 3.x 
+- datetime module: Typically included in Python's standard library
+
+## Recommended Modules
+This application does not require any additional Python modules beyond the standard library.
 
 ## Installation ⚙️
 1. Clone the repository:
@@ -42,196 +33,79 @@ A simple command-line task manager application written in Python. This project a
 git clone https://github.com/yourusername/task-manager.git
 cd task-manager
 ```
+2. Create a virtual environment (optional but recommended):
+```bash
+python3 -m venv venv
+source venv/bin/activate 
+```
+3. Install dependencies:
+If your Python environment does not have datetime module installed (highly unlikely), you can install it using pip:
+```bash
+pip install datetime
+```
+
+## Configuration
+
+Before running the application, ensure you configure the following aspects:
+- Priority Levels: The application supports task priorities such as low, medium, and high. 
+- Deadline Format: Dates should be formatted as DD-MM-YYYY.
 
 ## Usage ✍️
-Run the main script to start the task manager:
-```bash
-python main.py
+
+### Adding a Task
+To add a new task, use the `add_task()` method with the appropriate details including description, priority, and optional deadline.
+```python
+from task_manager import Task, TaskManager
+
+# Example usage
+task_manager = TaskManager()
+
+task1 = Task(task_id=1, description="Complete project proposal", priority="high", deadline="15-07-2024")
+task_manager.add_task(task1)
 ```
-Follow the on-screen menu to perform various task management operations.
+### Updating a Task
+You can update a task's details such as description, priority, deadline, or completion status using the `update_task()` method.
+```python
+# Example usage
+updated_task_data = {
+    "description": "Finalize project proposal and submit",
+    "deadline": "20-07-2024"
+}
+task_manager.update_task(1, updated_task_data)
+```
 
-## Modules 📂
+### Marking a Task as Completed
+Use the `mark_task_as_completed()` method to mark a task as completed.
+```python
+# Example usage
+task_manager.mark_task_as_completed('T01')
+```
 
-### **Task Module** 
-The `task.py` module defines the `Task` class, which represents a task in the task manager. It includes validation methods and conversion methods for task attributes.
+### Filtering Tasks
+You can filter tasks by priority or completion status using methods like `filter_tasks_by_priority()` and `filter_completed()`.
+```python
+# Example usage
+high_priority_tasks = task_manager.filter_tasks_by_priority('high')
+completed_tasks = task_manager.filter_completed('completed')
+```
 
-### **TaskManager Module**
-The `task_manager.py` module defines the `TaskManager` class, which manages a list of tasks and provides methods to add, remove, update, filter, sort, and save/load tasks.
+### Saving and Loading Tasks
+Tasks can be saved to a JSON file using `save_tasks_to_file()` and loaded back into the Task Manager using `load_tasks_from_file()`.
+```python
+# Example usage
+task_manager.save_tasks_to_file()
+task_manager.load_tasks_from_file('tasks.json')
+```
 
-### **Main Script**
-The `main.py` script provides a command-line interface for interacting with the `TaskManager`. It includes a menu for performing various task management operations.
+## Troubleshooting & FAQ
+Task not found when performing operations?
+If you encounter "Task not found" errors while updating, removing, or retrieving tasks, ensure that the task ID exists in the system. Double-check the task ID and try again.
 
+Invalid deadline format?
+When setting deadlines, use the format `DD-MM-YYYY`. Dates should be valid and in the future.
 
-
-## TaskManager 🔄
-
-`add_task(task: Task) -> None` Adds a new task to the list.
-
-<details>
-  <summary>More...</summary>
- 
-    - Parameters:
-       - `task (Task)`: The task to be added.
-       
-</details>
-
-`remove_task(task_id: int) -> None`: Removes a task by its ID.
-
-<details>
-  <summary>More...</summary>
- 
-  - Parameters:
-    - `task_id` (int): The ID of the task to be removed.
-         
-</details>
-
-
-`update_task(task_id: int, updated_task: dict) -> None`: Updates an existing task.
-
-<details>
-  <summary>More...</summary>
- 
-  - Parameters:
-    - `task_id` (int): The ID of the task to be updated.
-    - `updated_task` (dict): The updated task details.
-   
-</details>
-
-
-`get_task_by_id(task_id: int) -> Task`: Retrieves a task by its ID.
-
-<details>
-  <summary>More...</summary>
- 
-  - Parameters:
-    - `task_id` (int): The ID of the task to be retrieved.
-    
-</details>
-
-
-`save_tasks_to_file(file_path: str) -> None`: Saves the provided list of tasks to a specified file path.
-
-<details>
-  <summary>More...</summary>
- 
-  - Parameters:
-      - `file_path` (str): The path to the file where tasks will be saved.
-   
-</details>
-
-`load_tasks_from_file(file_path: str) -> None`: Loads the list of tasks from a specified file path.
-
-<details>
-  <summary>More...</summary>
-   
-    - Parameters:
-       - `file_path (str)`: The path to the file from which tasks will be loaded.
-       
-</details>
-
-## Task Attribute Operations 🧰
-
-`set_task_priority(task_id: int, priority: str) -> None`: Sets the priority of a task.
-
-<details>
-  <summary>More...</summary>
- 
-  - Parameters:
-     - `task_id` (int): The ID of the task to be updated.
-     - `priority` (str): The new priority level.
-   
-</details>
-
-`set_task_deadline(task_id: int, deadline: str) -> None`: Sets the deadline for a task.
-
-<details>
-  <summary>More...</summary>
- 
-  - Parameters:
-     - `task_id` (int): The ID of the task to be updated.
-     - `deadline` (str): The new deadline.
-   
-</details>
-
-`mark_task_as_completed(task_id: int)-> None`: Marks a task as completed.
-
-<details>
-  <summary>More...</summary>
- 
-  - Parameters:
-     - `task_id` (int): The ID of the task to be marked as completed.
-    
-</details>
-
-`set_task_description(task_id: int, description: str) -> None`: Sets the description for a task.
-
-<details>
-  <summary>More...</summary>
- 
-  - Parameters:
-     - `task_id` (int): The ID of the task to be updated.
-     - `description` (str): The new description.
-   
-
-## Task Filtering and Searching 📑
-
-`search_tasks_by_keyword(keyword: str) -> list`: Searches tasks by a keyword in the description.
-
-<details>
-  <summary>More...</summary>
- 
-  - Parameters:
-      - `keyword` (str): The keyword to search for.
-          
-</details>
-
-`filter_tasks_by_priority(priority: str) -> list`: Filters tasks by priority.
-
-<details>
-  <summary>More...</summary>
- 
-  - Parameters:
-     - `priority` (str): The priority level to filter by.
-   
-</details>
-
-`filter_tasks_by_status(status: str) -> list`: Filters tasks by their completion status.
-
-<details>
-  <summary>More...</summary>
- 
-  - Parameters:
-     - `status` (str): The completion status to filter by.
-   
-</details>
-
-`filter_tasks_by_deadline(deadline: str) -> list`: Filters tasks by their deadline.
-
-<details>
-  <summary>More...</summary>
- 
-  - Parameters:
-     - `deadline` (str): The deadline to filter by.
-       
-</details>
-
-## Task Counting and Summarizing 🧮
-
-`count_tasks() ->`: Returns the total number of tasks.
-
-`count_completed_tasks() -> int`: Returns the number of completed tasks.
-
-`count_pending_tasks() -> int`: Returns the number of pending tasks.
-
-`generate_task_summary() -> dict`: Generates a summary report of all tasks.
-
-### Task Sorting 📑
-
-`sort_tasks_by_deadline() -> None`: Sorts tasks by their deadline.
-
-`sort_tasks_by_priority()-> None`: Sorts tasks by their priority.
-    
-</details>
+How to mark a task as completed?
+To mark a task as completed, use the `mark_task_as_completed(task_id)` method. Ensure the task ID exists and is valid.
 
 ### Contributing 🤝
 Contributions are welcome! Please fork the repository and submit a pull request.
