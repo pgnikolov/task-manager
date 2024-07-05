@@ -80,8 +80,8 @@ class TaskManager:
             task_id: The ID of the task to update.
             updated_task (dict): A dictionary with the updated task attributes.
         """
-        if task_id in self.tasks:
-            self.tasks[task_id] = updated_task
+        for key, value in updated_task.items():
+            setattr(self.tasks[task_id], key, value)
         else:
             return "Task not found!"
 
@@ -264,22 +264,31 @@ class TaskManager:
         with open('tasks.json', "w") as f:
             json.dump(task_data, f, indent=4)
 
-    def load_tasks_from_file(self):
+    def load_tasks_from_file(self, filename='tasks.json'):
         """
-            Loads tasks from i JSON file.
+            Loads tasks from a JSON file and adds them to the TaskManager.
+        Args:
+            filename (str): Path to thw file.
         """
         try:
-            with open('tasks.json', "r") as f:
+            with open(filename, "r") as f:
                 task_data = json.load(f)
             for task_dict in task_data:
+                deadline = datetime.strptime(task_dict["deadline"], "%d-%m-%Y") if task_dict["deadline"] else None
                 task = Task(
+                    task_dict["task_id"],
                     task_dict["description"],
                     task_dict["priority"],
-                    datetime.strptime(task_dict["deadline"], "%d-%m-%Y") if task_dict["deadline"] else None,
-                    task_dict["completed"])
+                    deadline,
+                    task_dict["completed"]
+                )
                 self.tasks[task.task_id] = task
         except FileNotFoundError:
-            pass
+            print(f"File '{filename}' not found. No tasks loaded.")
+        except json.JSONDecodeError:
+            print(f"Error decoding JSON from file '{filename}'. No tasks loaded.")
+        except Exception as e:
+            print(f"An error occurred while loading tasks from file '{filename}': {e}")
 
     def sort_tasks_by_deadline(self, ascending=True):
         """
@@ -290,31 +299,24 @@ class TaskManager:
             str: A msg if there are task with not valid or missing deadlines.
             str: A message with all tasks sorted by their deadlines.
         """
-        tasks = list(self.tasks.values())
-        tasks_with_deadlines = []
-        for task in tasks:
-            if hasattr(task, 'deadline') and task.deadline is not None:
-                tasks_with_deadlines.append(task)
-            else:
-                print(f"Task {task.id} does not have a valid deadline.")
+        tasks_with_deadlines = [task for task in self.tasks.values() if task.deadline]
         tasks_with_deadlines.sort(key=lambda task: task.deadline, reverse=not ascending)
-        print("Sorted tasks with valid deadlines:")
+        result = "Sorted tasks with valid deadlines:\n"
         for task in tasks_with_deadlines:
-            print(f"Task ID: {task.id}, Description: {task.description}, Deadline: {task.deadline}")
+            result += f"Task ID: {task.task_id}, Description: {task.description}, Deadline: {task.deadline}\n"
+        return result.strip()
 
     def sort_tasks_by_priority(self, ascending=True):
         """
-        Sorts tasks by their priorities in ascending order.
-
+            Sorts tasks by their priorities in ascending order.
         Args:
             ascending (bool): Sort tasks by their priorities in ascending order or not.
-
         Returns:
             str: A message with all tasks sorted by their priorities.
         """
         priority_order = {'low': 1, 'medium': 2, 'high': 3}
-        sorted_tasks = sorted(self.tasks, key=lambda x: priority_order[x['priority']], reverse=not ascending)
-        result = "Tasks sorted by priority:\n"
+        sorted_tasks = sorted(self.tasks.values(), key=lambda x: priority_order[x.priority], reverse=not ascending)
+        result = []
         for task in sorted_tasks:
-            result += f"Task: {task['name']}, Priority: {task['priority']}\n"
-        return result.strip()
+            result.append(f"Task: {task.description}, Priority: {task.priority}")
+        return result
