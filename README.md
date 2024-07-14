@@ -17,7 +17,7 @@ This application is designed to help you organize and manage tasks effectively. 
 - Contributing
 - License
 
-## Requirements ❗
+## Requirements 🎗️
 
 To run the Task Manager application, ensure your environment meets the following requirements:
 - Python: Version 3.x 
