@@ -3,7 +3,24 @@
 
 ## Introduction 🎦
 
-This application is designed to help you organize and manage tasks effectively. Whether you're managing personal tasks, team projects, or daily activities, this tool provides a simple way to track tasks, set priorities, manage deadlines, and monitor completion status.
+This application is designed to help you organize and manage tasks effectively.  With advanced features for sorting, searching, 
+and filtering, this application ensures that you can easily prioritize and track your tasks. Whether for personal use or team projects,
+this application helps manage deadlines, priorities, and completion statuses effectively.
+
+## Leveraging Quicksort and Binary Search 🧠
+Quicksort and Binary Search enhance the performance and efficiency of task management operations:
+
+- **Quicksort** is utilized to sort tasks based on deadlines and priorities. While Quicksort traditionally sorts arrays of numbers, we've adapted it to work with complex task objects. Instead of simply comparing numerical values, the algorithm extracts and compares specific attributes (like deadlines or priority levels) from each task. This customized approach allows for efficient sorting tailored to the application's needs.
+
+- **Binary Search** is implemented for quickly finding tasks based on their deadlines. In a standard Binary Search, the algorithm searches for a specific value in a sorted array. Here, we've modified it to search within an array of tasks, where the search is based on a particular attribute, such as the task's deadline. This adaptation provides a fast and effective way to locate tasks within large datasets.
+
+## Algorithmic Changes ⚙️
+
+- **Quicksort Modifications:** Condition-based Sorting: Instead of direct comparisons, the algorithm uses a condition function to extract the relevant attribute (deadline or priority) from each task for comparison.
+- **Binary Search Adjustments:** The search focuses on task attributes (like deadlines), requiring the condition function to extract these attributes for comparison during the search process. The search is flexible, supporting both ascending and descending sorted arrays, which is crucial for tasks sorted by either earliest or latest deadlines.
+
+
+
 
 ## Table of Contents 📝
 
@@ -52,59 +69,69 @@ Before running the application, ensure you configure the following aspects:
 ## Usage ✍️
 
 ### Adding a Task
-To add a new task, use the `add_task()` method with the appropriate details including description, priority, and optional deadline.
+Add a new task with specific details including description, priority, and an optional deadline.
 ```python
-from task_manager import Task, TaskManager
+from task_manager import TaskManager
 
-# Example usage
 task_manager = TaskManager()
-
-task1 = Task(task_id=1, description="Complete project proposal", priority="high", deadline="15-07-2024")
-task_manager.add_task(task1)
+task_manager.add_task(task_id=1, description="Complete project proposal", priority="high", deadline_str="15-07-2024")
 ```
+### Removing a Task 🗑️
+Remove a task using its ID.
+```python
+task_manager.remove_task(1)
+```
+
 ### Updating a Task 🆕
-You can update a task's details such as description, priority, deadline, or completion status using the `update_task()` method.
+Update an existing task’s details like description, priority, deadline, or completion status.
 ```python
-# Example usage
-updated_task_data = {
-    "description": "Finalize project proposal and submit",
-    "deadline": "20-07-2024"
-}
-task_manager.update_task(1, updated_task_data)
+task_manager.update_task(2, {"description": "Finalize project proposal and submit", "completed": True})
 ```
 
-### Marking a Task as Completed ✔️
-Use the `mark_task_as_completed()` method to mark a task as completed.
+### Searching for Tasks 🔍
+Search for tasks by their deadline or priority.
 ```python
-# Example usage
-task_manager.mark_task_as_completed('T01')
+tasks_with_deadline = task_manager.find_task_by_deadline("20-08-2024")
+tasks_with_priority = task_manager.find_task_by_priority("medium")
 ```
 
 ### Filtering Tasks 🗃️
-You can filter tasks by priority or completion status using methods like `filter_tasks_by_priority()` and `filter_completed()`.
+Filter tasks by deadlines either before or after a specified date.
 ```python
-# Example usage
-high_priority_tasks = task_manager.filter_tasks_by_priority('high')
-completed_tasks = task_manager.filter_completed('completed')
+tasks_before_date = task_manager.filter_tasks_by_deadline("21-08-2024", filter_type='before')
+tasks_after_date = task_manager.filter_tasks_by_deadline("21-08-2024", filter_type='after')
+```
+
+### Sorting Tasks 🗂️
+Sort tasks by their deadlines or priorities in ascending or descending order.
+```python
+sorted_by_deadline = task_manager.sort_tasks_by_deadline(ascending=True)
+sorted_by_priority = task_manager.sort_tasks_by_priority(ascending=True)
 ```
 
 ### Saving and Loading Tasks 💾
-Tasks can be saved to a JSON file using `save_tasks_to_file()` and loaded back into the Task Manager using `load_tasks_from_file()`.
+Tasks can be saved to a file and loaded back into the application.
 ```python
-# Example usage
-task_manager.save_tasks_to_file()
-task_manager.load_tasks_from_file('tasks.json')
+from task_manager import TaskFileManager
+
+file_manager = TaskFileManager('tasks.txt')
+file_manager.save_tasks_to_file(task_manager.tasks)
+loaded_tasks = file_manager.load_tasks_from_file()
+```
+
+### Generating Task Statistics 📊
+Generate summaries and statistics for your tasks.
+```python
+from task_manager import TaskStatistics
+
+summary = TaskStatistics.generate_task_summary(task_manager.tasks)
+print(summary)
 ```
 
 ## Troubleshooting & FAQ ❔
-Task not found when performing operations?
-If you encounter "Task not found" errors while updating, removing, or retrieving tasks, ensure that the task ID exists in the system. Double-check the task ID and try again.
-
-Invalid deadline format?
-When setting deadlines, use the format `DD-MM-YYYY`. Dates should be valid and in the future.
-
-How to mark a task as completed?
-To mark a task as completed, use the `mark_task_as_completed(task_id)` method. Ensure the task ID exists and is valid.
+ - **Task not found?** Ensure the task ID exists before attempting to update or remove it. 
+ - **Invalid date** format? Ensure all dates follow the DD-MM-YYYY format. 
+ - **Priority level issues?** Use only "low", "medium", or "high" as valid priority levels.
 
 ### Contributing 🤝
 Contributions are welcome! Please fork the repository and submit a pull request.

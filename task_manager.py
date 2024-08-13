@@ -1,322 +1,356 @@
-import json
 from datetime import datetime
 
 
-class Task:
+def quicksort(arr, condition, ascending=True):
     """
-        Single task with an ID, description, priority, deadline, and completion status.
-    Attributes:
-        task_id (int): Task ID.
-        description (str): Task description.
-        priority (int): Task priority - low, medium or high
-        deadline (datetime): Task deadline in format DD-MM-YYYY
-        completed (bool): Task completion status.
-        PRIORITIES (list): Possible options for task priority.
+    Sorts an array using the quicksort algorithm based on a given condition.
+     Args:
+        arr (list): The list of elements to sort.
+        condition (function): A function that extracts the value to sort by.
+        ascending (bool, optional): ascending order if True, else descending.
+    Returns:
+        list: The sorted list.
     """
-    PRIORITIES = ["low", "medium", "high"]
+    if len(arr) <= 1:
+        return arr
+    pivot = arr[len(arr) // 2]
+    middle = [x for x in arr if condition(x) == condition(pivot)]
+    if ascending:
+        left = [x for x in arr if (condition(x) < condition(pivot))]
+        right = [x for x in arr if (condition(x) > condition(pivot))]
+    else:
+        left = [x for x in arr if (condition(x) > condition(pivot))]
+        right = [x for x in arr if (condition(x) < condition(pivot))]
+    return quicksort(left, condition, ascending) + middle + quicksort(right, condition, ascending)
 
-    def __init__(self, task_id, description=None, priority=None, deadline=None, completed=False):
-        self.task_id = task_id
-        self.description = description
-        self.priority = priority
-        self.deadline = deadline
-        self.completed = completed
 
-    def set_task_priority(self, priority):
-        if priority in self.PRIORITIES:
-            self.priority = priority
+def binary_search(arr, condition, target, ascending=True):
+    """
+    Binary search on a sorted array to find the target value based on a given condition.
+    Args:
+        arr (list): The sorted list of element.
+        condition (function): A function that extracts the value to search by.
+        target (any): The target value to find.
+        ascending (bool, optional): array is sorted in ascending order if True, else descending.
+    Returns:
+        int: The index of the target element if found, otherwise -1.
+    """
+    left, right = 0, len(arr) - 1
+    while left <= right:
+        mid = (left + right) // 2
+        mid_value = condition(arr[mid])
+        if mid_value == target:
+            return mid
+        if (ascending and mid_value < target) or (not ascending and mid_value > target):
+            left = mid + 1
         else:
-            return f"Invalid priority. Must be one of {', '.join(self.PRIORITIES)}."
-
-    def set_deadline(self, deadline):
-        if deadline:
-            try:
-                deadline_date = datetime.strptime(deadline, "%d-%m-%Y")
-                if deadline_date > datetime.now():
-                    self.deadline = deadline_date
-                else:
-                    raise ValueError("Deadline cannot be in the past.")
-            except ValueError:
-                raise ValueError("Invalid deadline format. Use DD-MM-YYYY.")
-        else:
-            self.deadline = None
-
-    def task_to_dict(self):
-        return {
-            "description": self.description,
-            "priority": self.priority,
-            "deadline": self.deadline.strftime("%d-%m-%Y") if self.deadline else None,
-            "completed": self.completed
-        }
+            right = mid - 1
+    return -1
 
 
 class TaskManager:
-    def __init__(self):
-        self.tasks = {}
+    """
+    Manages a list of tasks with functions to add, remove, update, filter, and sort tasks.
+    Attributes:
+        PRIORITIES (list): A list of valid priorities for tasks.
+        tasks (list): The list of tasks.
+        tasks_by_deadline (list): The list of tasks sorted by deadline.
+        tasks_by_priority (list): The list of tasks sorted by priority.
+    """
+    PRIORITIES = ["low", "medium", "high"]
 
-    def add_task(self, task):
+    def __init__(self):
+        self.tasks = []
+        self.tasks_by_deadline = []
+        self.tasks_by_priority = []
+
+    def _validate_priority(self, priority):
         """
-            Adds a task to the task manager.
+        Validates if the priority is in the allowed priorities.
         Args:
-            task (Task): The task to add.
+            priority (str): The priority level to validate.
+        Raises:
+            ValueError: If the priority is invalid.
         """
-        self.tasks[task.task_id] = task
+        if priority not in self.PRIORITIES:
+            raise ValueError(f"Invalid priority. Must be one of {', '.join(self.PRIORITIES)}.")
+
+    def _update_sorted_lists(self):
+        self.tasks_by_deadline = quicksort(self.tasks, condition=lambda t: t[3] if t[3] else datetime.max)
+        priority_order = {priority: i for i, priority in enumerate(self.PRIORITIES)}
+        self.tasks_by_priority = quicksort(self.tasks, condition=lambda t: priority_order[t[2]])
+
+    def add_task(self, task_id, description, priority, deadline_str, completed=False):
+        """
+        Adds a new task to the manager.
+        Args:
+            task_id (int): ID of the task.
+            description (str): description of the task.
+            priority (str):  priority of the task (low, medium, high).
+            deadline_str (str): deadline for the task in DD-MM-YYYY format.
+            completed (bool): Whether the task is completed. Defaults to False.
+        Raises:
+            ValueError: If the priority is invalid, the date format is incorrect or task ID already exists.
+        """
+        self._validate_priority(priority)
+
+        if any(task[0] == task_id for task in self.tasks):
+            raise ValueError(f"Task with ID {task_id} already exists.")
+
+        try:
+            deadline = datetime.strptime(deadline_str, "%d-%m-%Y")
+        except ValueError:
+            raise ValueError("Invalid date format. Please use DD-MM-YYYY.")
+
+        task = [task_id, description, priority, deadline, completed]
+        self.tasks.append(task)
+        self._update_sorted_lists()
 
     def remove_task(self, task_id):
         """
-            Removes a task from the task manager by its ID.
+        Removes a task.
         Args:
-            task_id : The ID of the task to remove.
+            task_id (int): ID of the task to remove.
+        Returns:
+            str: A message indicating if the task was found and removed.
         """
-        if task_id in self.tasks:
-            del self.tasks[task_id]
-        else:
-            return "Task not found!"
+        for task in self.tasks:
+            if task[0] == task_id:
+                self.tasks.remove(task)
+                self._update_sorted_lists()
+                return
+        return "Task not found!"
 
     def update_task(self, task_id, updated_task):
         """
-            Updates a task in the task manager by its ID.
+        Updates an existing task with new information.
         Args:
-            task_id: The ID of the task to update.
-            updated_task (dict): A dictionary with the updated task attributes.
+            task_id (int): ID of the task to update.
+            updated_task (dict): A dictionary of the fields to update {"description": "New desc"}.
+        Raises:
+            ValueError: If any of the keys are invalid or the date format is incorrect.
+        Returns:
+            str: A message if task was found and updated.
         """
-        for key, value in updated_task.items():
-            setattr(self.tasks[task_id], key, value)
-        else:
-            return "Task not found!"
+        valid_keys = {"description", "priority", "deadline", "completed"}
+        for key in updated_task:
+            if key not in valid_keys:
+                raise ValueError(f"Invalid key: {key}. Valid keys are: {', '.join(valid_keys)}")
+
+        for task in self.tasks:
+            if task[0] == task_id:
+                for key, value in updated_task.items():
+                    if key == "description":
+                        task[1] = value
+                    elif key == "priority":
+                        self._validate_priority(value)
+                        task[2] = value
+                    elif key == "deadline":
+                        try:
+                            task[3] = datetime.strptime(value, "%d-%m-%Y")
+                        except ValueError:
+                            raise ValueError("Invalid date format. Please use DD-MM-YYYY.")
+                    elif key == "completed":
+                        task[4] = value
+                self._update_sorted_lists()
+                return
+        return "Task not found!"
 
     def get_task(self, task_id):
         """
-            Retrieves a task by its ID.
+        Get task by its ID.
         Args:
-            task_id: The ID of the task to retrieve.
+            task_id (int): The ID of the task we need.
         Returns:
-            Task: The task with the given ID, or None if not found.
+            list or str: The task details as a list, or a message if the task is not found.
         """
-        if task_id in self.tasks:
-            return self.tasks.get(task_id)
-        else:
-            return f"Task with id {task_id} not found!"
+        index = next((i for i, task in enumerate(self.tasks) if task[0] == task_id), -1)
+        if index != -1:
+            return self.tasks[index]
+        return f"Task with id {task_id} not found!"
 
-    def set_task_priority(self, task_id, priority):
+    def filter_tasks_by_deadline(self, date_str, filter_type='before'):
         """
-            Sets the priority of a task.
+        Filters tasks based on their deadlines.
         Args:
-            task_id: The ID of the task to update.
-            priority (str): The new priority for the task.
+            date_str (str): target date in DD-MM-YYYY format.
+            filter_type (str): filter tasks 'before' or 'after' the target date. Default = 'before'.
+        Raises:
+            ValueError: If the date format is incorrect or the filter_type is invalid.
         Returns:
-            str: A message if task with task_id doesn't exist.
+            list: A list of tasks that match the filter criteria.
         """
-        if task_id in self.tasks:
-            self.tasks[task_id].priority = priority
-        else:
-            return f"Task with id {task_id} not found!"
-
-    def set_task_deadline(self, task_id, deadline):
-        """
-            Sets the deadline of a task.
-        Args:
-            task_id: The ID of the task to update.
-            deadline (str): The new deadline for the task.
-        Returns:
-            str: A message if task with task_id doesn't exist.
-        """
-        if task_id in self.tasks:
-            self.tasks[task_id].deadline = deadline
-        else:
-            return f"Task with id {task_id} not found!"
-
-    def mark_task_as_completed(self, task_id):
-        """
-            Marks a task as completed.
-        Args:
-            task_id: The ID of the task to update.
-        Returns:
-            str: A message if task with task_id doesn't exist.
-        """
-        if task_id in self.tasks:
-            self.tasks[task_id].completed = True
-        else:
-            return f"Task with id {task_id} not found!"
-
-    def set_task_description(self, task_id, description):
-        """
-            Sets the description of a task.
-        Args:
-            task_id: The ID of the task to update.
-            description (str): The new description for the task.
-        Returns:
-            str: A message if task with task_id doesn't exist.
-        """
-        if task_id in self.tasks:
-            self.tasks[task_id].description = description
-        else:
-            return f"Task with id {task_id} not found!"
-
-    def search_tasks_by_keyword(self, keyword):
-        """
-            Searches for tasks by keyword in their descriptions.
-        Args:
-            keyword (str): The keyword to search for.
-        Returns:
-            list: A list of tasks that contain the keyword in their descriptions.
-            str: A message if tasks with keyword in their descriptions are found.
-        """
-        task_keyword = [task for task in self.tasks.values() if keyword.lower() in task.description.lower()]
-        if not task_keyword:
-            return f"No tasks found with keyword in their description '{keyword}'!"
-        else:
-            return task_keyword
-
-    def filter_tasks_by_priority(self, priority):
-        """
-            Filters tasks by priority.
-        Args:
-            priority (str): The priority to filter tasks by.
-        Returns:
-            list: A list of tasks with the given priority.
-            str: A message if the given priority is not valid.
-        """
-        if priority in Task.PRIORITIES:
-            return [task for task in self.tasks.values() if task.priority == priority]
-        else:
-            return f"{priority} is not a valid priority."
-
-    def filter_completed(self, status):
-        """
-            Filters tasks by their completion status.
-        Args:
-            status (str): The status to filter tasks by ('completed' or 'pending').
-        Returns:
-            list: A list of tasks with the given status.
-            str: A message if the given status is not valid.
-        """
-        if status == 'completed':
-            completed_tasks = [task for task in self.tasks.values() if task.completed]
-        elif status == 'pending':
-            completed_tasks = [task for task in self.tasks.values() if not task.completed]
-        else:
-            return f"{status} is not a valid status."
-        return completed_tasks
-
-    def filter_tasks_by_deadline(self, deadline):
-        """
-            Filters tasks by their deadline.
-        Args:
-            deadline (str): The deadline to filter tasks by.
-        Returns:
-            list: A list of tasks with deadlines before or on the given deadline.
-        """
-        return [task for task in self.tasks.values() if task.deadline == deadline]
-
-    def count_tasks(self):
-        """
-            Counts the total number of tasks.
-        Returns:
-            int: The total number of tasks.
-            str: A message if there is no tasks found.
-        """
-        if self.tasks:
-            return len(self.tasks)
-        else:
-            return "No tasks found."
-
-    def count_completed_tasks(self):
-        """
-            Counts the number of completed tasks.
-        Returns:
-            int: The number of completed tasks.
-            str: A message if completed tasks are not found.
-        """
-        completed_tasks = self.filter_completed('completed')
-        if not completed_tasks:
-            return "No completed tasks found."
-        else:
-            return len(completed_tasks)
-
-    def count_pending_tasks(self):
-        """
-            Counts the number of pending tasks.
-        Returns:
-            int: The number of pending tasks.
-            str: A message if pending tasks are not found.
-        """
-        pending_tasks = self.filter_tasks_by_priority('pending')
-        if not pending_tasks:
-            return "No pending tasks found."
-        else:
-            return len(pending_tasks)
-
-    def generate_task_summary(self):
-        """
-            Generates a summary of tasks, including total, completed, and pending tasks
-        """
-        total_tasks = self.count_tasks()
-        completed_tasks = self.count_completed_tasks()
-        pending_tasks = self.count_pending_tasks()
-        return f"Total Tasks: {total_tasks}\nCompleted Tasks: {completed_tasks}\nPending Tasks: {pending_tasks}"
-
-    def save_tasks_to_file(self):
-        """
-            Saves tasks to a file in JSON format.
-        """
-        task_data = [task.to_dict() for task in self.tasks.values()]
-        with open('tasks.json', "w") as f:
-            json.dump(task_data, f, indent=4)
-
-    def load_tasks_from_file(self, filename='tasks.json'):
-        """
-            Loads tasks from a JSON file and adds them to the TaskManager.
-        Args:
-            filename (str): Path to thw file.
-        """
+        # check for empty list
+        if not self.tasks:
+            return []
         try:
-            with open(filename, "r") as f:
-                task_data = json.load(f)
-            for task_dict in task_data:
-                deadline = datetime.strptime(task_dict["deadline"], "%d-%m-%Y") if task_dict["deadline"] else None
-                task = Task(
-                    task_dict["task_id"],
-                    task_dict["description"],
-                    task_dict["priority"],
-                    deadline,
-                    task_dict["completed"]
-                )
-                self.tasks[task.task_id] = task
-        except FileNotFoundError:
-            print(f"File '{filename}' not found. No tasks loaded.")
-        except json.JSONDecodeError:
-            print(f"Error decoding JSON from file '{filename}'. No tasks loaded.")
-        except Exception as e:
-            print(f"An error occurred while loading tasks from file '{filename}': {e}")
+            target_date = datetime.strptime(date_str, "%d-%m-%Y")
+        except ValueError:
+            raise ValueError("Invalid date format. Please use DD-MM-YYYY.")
+
+        sorted_tasks = quicksort(self.tasks, condition=lambda t: t[3] if t[3] else datetime.max)
+
+        if filter_type == 'before':
+            index = binary_search(sorted_tasks, condition=lambda t: t[3], target=target_date, ascending=True)
+            if index == -1:
+                # If no exact match found, return all tasks before the target date
+                filtered_tasks = [task for task in sorted_tasks if task[3] and task[3] < target_date]
+            else:
+                # Include all tasks before the target date
+                filtered_tasks = [task for task in sorted_tasks[:index + 1] if task[3] and task[3] < target_date]
+        elif filter_type == 'after':
+            index = binary_search(sorted_tasks, condition=lambda t: t[3], target=target_date, ascending=False)
+            if index == -1:
+                # If no exact match found, return all tasks after the target date
+                filtered_tasks = [task for task in sorted_tasks if task[3] and task[3] > target_date]
+            else:
+                # Include all tasks after the target date
+                filtered_tasks = [task for task in sorted_tasks[index:] if task[3] and task[3] > target_date]
+        else:
+            raise ValueError("Invalid filter_type. Must be 'before' or 'after'.")
+        return filtered_tasks
 
     def sort_tasks_by_deadline(self, ascending=True):
         """
-            Sorts tasks by their deadlines in ascending order.
+        Sorts tasks by their deadlines.
         Args:
-            ascending (bool): Sort tasks by their deadlines in ascending order or not.
+            ascending (bool, optional): Sort in ascending order if True, else descendin.
         Returns:
-            str: A msg if there are task with not valid or missing deadlines.
-            str: A message with all tasks sorted by their deadlines.
+            str: A formatted string of the sorted tasks with deadlines.
         """
-        tasks_with_deadlines = [task for task in self.tasks.values() if task.deadline]
-        tasks_with_deadlines.sort(key=lambda task: task.deadline, reverse=not ascending)
+        # check for empty list
+        if not self.tasks_by_deadline:
+            return "No tasks to sort."
+
+        sorted_tasks = self.tasks_by_deadline if ascending else list(reversed(self.tasks_by_deadline))
         result = "Sorted tasks with valid deadlines:\n"
-        for task in tasks_with_deadlines:
-            result += f"Task ID: {task.task_id}, Description: {task.description}, Deadline: {task.deadline}\n"
+        for task in sorted_tasks:
+            result += f"Task ID: {task[0]}, Description: {task[1]}, Deadline: {task[3].strftime('%d-%m-%Y')}\n"
         return result.strip()
 
     def sort_tasks_by_priority(self, ascending=True):
         """
-            Sorts tasks by their priorities in ascending order.
+        Sorts the tasks by priority. The priority is sorted in order: "low", "medium", "high".
+        If there are no tasks, the method returns an empty list.
         Args:
-            ascending (bool): Sort tasks by their priorities in ascending order or not.
+            ascending (bool, optional): True, sorts in ascending, False, sorts in descending.
         Returns:
-            str: A message with all tasks sorted by their priorities.
+            list of str: A list of strings, each string is a task
         """
-        priority_order = {'low': 1, 'medium': 2, 'high': 3}
-        sorted_tasks = sorted(self.tasks.values(), key=lambda x: priority_order[x.priority], reverse=not ascending)
+        # check for empty list
+        if not self.tasks_by_priority:
+            return []
+
+        sorted_tasks = self.tasks_by_priority if ascending else list(reversed(self.tasks_by_priority))
         result = []
         for task in sorted_tasks:
-            result.append(f"Task: {task.description}, Priority: {task.priority}")
+            result.append(f"Task ID: {task[0]}, Description: {task[1]}, Priority: {task[2]}")
         return result
+
+    def find_task_by_deadline(self, date_str):
+        """
+        Finds and returns a list of tasks withdeadline wanted by user. Search goes in sorted list of tasks by deadline.
+        Args:
+            date_str (str): deadline date in the format "DD-MM-YYYY".
+        Returns:
+            list of list: A list of tasks, If no tasks returs empty list
+        Raises:
+            ValueError: If the provided date_str is not in the format "DD-MM-YYYY".
+            -
+        """
+        try:
+            target_date = datetime.strptime(date_str, "%d-%m-%Y")
+        except ValueError:
+            raise ValueError("Invalid date format. Please use DD-MM-YYYY.")
+
+        sorted_tasks = self.tasks_by_deadline
+        index = binary_search(sorted_tasks, condition=lambda t: t[3], target=target_date, ascending=True)
+        matching_tasks = []
+        if index != -1:
+            while index < len(sorted_tasks) and sorted_tasks[index][3] == target_date:
+                matching_tasks.append(sorted_tasks[index])
+                index += 1
+        else:
+            matching_tasks = []
+
+        return matching_tasks
+
+    def find_task_by_priority(self, priority):
+        """
+        Finds and returns a list of tasks with same priority, in already sorted list by priority
+        Args:
+            priority (str): The priority level to search "low", "medium", or "high".
+        Returns:
+            list of list: A list of tasks
+        Raises:
+            ValueError: If the provided priority is not valid.
+        """
+        self._validate_priority(priority)
+        sorted_tasks = self.tasks_by_priority
+        priority_order = {p: i for i, p in enumerate(self.PRIORITIES)}
+        target_priority_value = priority_order[priority]
+        matching_tasks = [task for task in sorted_tasks if priority_order[task[2]] == target_priority_value]
+
+        return matching_tasks
+
+
+class TaskFileManager:
+    """
+    Handles saving and loading tasks from a file.
+    Attributes:
+        filename (str): name of the file to read from and write to.
+    """
+
+    def __init__(self, filename='tasks.txt'):
+        self.filename = filename
+
+    def save_tasks_to_file(self, tasks):
+        with open(self.filename, "w") as f:
+            for task in tasks:
+                deadline_str = task[3].strftime('%d-%m-%Y') if task[3] else 'None'
+                task_line = f"{task[0]},{task[1]},{task[2]},{deadline_str},{task[4]}\n"
+                f.write(task_line)
+
+    def load_tasks_from_file(self):
+        tasks = []
+        try:
+            with open(self.filename, "r") as f:
+                for line in f:
+                    task_data = line.strip().split(',')
+                    task_id = int(task_data[0])
+                    description = task_data[1]
+                    priority = task_data[2]
+                    if priority not in TaskManager.PRIORITIES:
+                        raise ValueError(f"Invalid priority. Must be one of {', '.join(TaskManager.PRIORITIES)}.")
+                    deadline = datetime.strptime(task_data[3], "%d-%m-%Y") if task_data[3] != 'None' else None
+                    completed = task_data[4] == 'True'
+                    tasks.append([task_id, description, priority, deadline, completed])
+        except FileNotFoundError:
+            print(f"File '{self.filename}' not found. No tasks loaded.")
+        except Exception as e:
+            print(f"An error occurred while loading tasks from file '{self.filename}': {e}")
+        return tasks
+
+
+class TaskStatistics:
+    """
+    Provides static methods for generating task statistics.
+    """
+    @staticmethod
+    def count_tasks(tasks):
+        return len(tasks)
+
+    @staticmethod
+    def count_completed_tasks(tasks):
+        return len([task for task in tasks if task[4]])
+
+    @staticmethod
+    def count_pending_tasks(tasks):
+        return len([task for task in tasks if not task[4]])
+
+    @staticmethod
+    def generate_task_summary(tasks):
+        total_tasks = TaskStatistics.count_tasks(tasks)
+        completed_tasks = TaskStatistics.count_completed_tasks(tasks)
+        pending_tasks = TaskStatistics.count_pending_tasks(tasks)
+        return f"Total Tasks: {total_tasks}\nCompleted Tasks: {completed_tasks}\nPending Tasks: {pending_tasks}"
