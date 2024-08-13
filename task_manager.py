@@ -64,7 +64,7 @@ class TaskManager:
         self.tasks_by_deadline = []
         self.tasks_by_priority = []
 
-    def _validate_priority(self, priority):
+    def __validate_priority(self, priority):
         """
         Validates if the priority is in the allowed priorities.
         Args:
@@ -75,7 +75,7 @@ class TaskManager:
         if priority not in self.PRIORITIES:
             raise ValueError(f"Invalid priority. Must be one of {', '.join(self.PRIORITIES)}.")
 
-    def _update_sorted_lists(self):
+    def __update_sorted_lists(self):
         self.tasks_by_deadline = quicksort(self.tasks, condition=lambda t: t[3] if t[3] else datetime.max)
         priority_order = {priority: i for i, priority in enumerate(self.PRIORITIES)}
         self.tasks_by_priority = quicksort(self.tasks, condition=lambda t: priority_order[t[2]])
@@ -92,7 +92,7 @@ class TaskManager:
         Raises:
             ValueError: If the priority is invalid, the date format is incorrect or task ID already exists.
         """
-        self._validate_priority(priority)
+        self.__validate_priority(priority)
 
         if any(task[0] == task_id for task in self.tasks):
             raise ValueError(f"Task with ID {task_id} already exists.")
@@ -104,7 +104,7 @@ class TaskManager:
 
         task = [task_id, description, priority, deadline, completed]
         self.tasks.append(task)
-        self._update_sorted_lists()
+        self.__update_sorted_lists()
 
     def remove_task(self, task_id):
         """
@@ -117,7 +117,7 @@ class TaskManager:
         for task in self.tasks:
             if task[0] == task_id:
                 self.tasks.remove(task)
-                self._update_sorted_lists()
+                self.__update_sorted_lists()
                 return
         return "Task not found!"
 
@@ -143,7 +143,7 @@ class TaskManager:
                     if key == "description":
                         task[1] = value
                     elif key == "priority":
-                        self._validate_priority(value)
+                        self.__validate_priority(value)
                         task[2] = value
                     elif key == "deadline":
                         try:
@@ -152,7 +152,7 @@ class TaskManager:
                             raise ValueError("Invalid date format. Please use DD-MM-YYYY.")
                     elif key == "completed":
                         task[4] = value
-                self._update_sorted_lists()
+                self.__update_sorted_lists()
                 return
         return "Task not found!"
 
@@ -164,9 +164,9 @@ class TaskManager:
         Returns:
             list or str: The task details as a list, or a message if the task is not found.
         """
-        index = next((i for i, task in enumerate(self.tasks) if task[0] == task_id), -1)
-        if index != -1:
-            return self.tasks[index]
+        task_index = next((i for i, task in enumerate(self.tasks) if task[0] == task_id), -1)
+        if task_index != -1:
+            return self.tasks[task_index]
         return f"Task with id {task_id} not found!"
 
     def filter_tasks_by_deadline(self, date_str, filter_type='before'):
@@ -191,21 +191,21 @@ class TaskManager:
         sorted_tasks = quicksort(self.tasks, condition=lambda t: t[3] if t[3] else datetime.max)
 
         if filter_type == 'before':
-            index = binary_search(sorted_tasks, condition=lambda t: t[3], target=target_date, ascending=True)
-            if index == -1:
+            bsindex = binary_search(sorted_tasks, condition=lambda t: t[3], target=target_date, ascending=True)
+            if bsindex == -1:
                 # If no exact match found, return all tasks before the target date
                 filtered_tasks = [task for task in sorted_tasks if task[3] and task[3] < target_date]
             else:
                 # Include all tasks before the target date
-                filtered_tasks = [task for task in sorted_tasks[:index + 1] if task[3] and task[3] < target_date]
+                filtered_tasks = [task for task in sorted_tasks[:bsindex + 1] if task[3] and task[3] < target_date]
         elif filter_type == 'after':
-            index = binary_search(sorted_tasks, condition=lambda t: t[3], target=target_date, ascending=False)
-            if index == -1:
+            bsindex = binary_search(sorted_tasks, condition=lambda t: t[3], target=target_date, ascending=False)
+            if bsindex == -1:
                 # If no exact match found, return all tasks after the target date
                 filtered_tasks = [task for task in sorted_tasks if task[3] and task[3] > target_date]
             else:
                 # Include all tasks after the target date
-                filtered_tasks = [task for task in sorted_tasks[index:] if task[3] and task[3] > target_date]
+                filtered_tasks = [task for task in sorted_tasks[bsindex:] if task[3] and task[3] > target_date]
         else:
             raise ValueError("Invalid filter_type. Must be 'before' or 'after'.")
         return filtered_tasks
@@ -264,12 +264,12 @@ class TaskManager:
             raise ValueError("Invalid date format. Please use DD-MM-YYYY.")
 
         sorted_tasks = self.tasks_by_deadline
-        index = binary_search(sorted_tasks, condition=lambda t: t[3], target=target_date, ascending=True)
+        bsindex = binary_search(sorted_tasks, condition=lambda t: t[3], target=target_date, ascending=True)
         matching_tasks = []
-        if index != -1:
-            while index < len(sorted_tasks) and sorted_tasks[index][3] == target_date:
-                matching_tasks.append(sorted_tasks[index])
-                index += 1
+        if bsindex != -1:
+            while bsindex < len(sorted_tasks) and sorted_tasks[bsindex][3] == target_date:
+                matching_tasks.append(sorted_tasks[bsindex])
+                bsindex += 1
         else:
             matching_tasks = []
 
@@ -285,7 +285,7 @@ class TaskManager:
         Raises:
             ValueError: If the provided priority is not valid.
         """
-        self._validate_priority(priority)
+        self.__validate_priority(priority)
         sorted_tasks = self.tasks_by_priority
         priority_order = {p: i for i, p in enumerate(self.PRIORITIES)}
         target_priority_value = priority_order[priority]
@@ -319,16 +319,12 @@ class TaskFileManager:
                     task_data = line.strip().split(',')
                     task_id = int(task_data[0])
                     description = task_data[1]
-                    priority = task_data[2]
-                    if priority not in TaskManager.PRIORITIES:
-                        raise ValueError(f"Invalid priority. Must be one of {', '.join(TaskManager.PRIORITIES)}.")
+                    priority = task_data[2] if task_data[2] else None
                     deadline = datetime.strptime(task_data[3], "%d-%m-%Y") if task_data[3] != 'None' else None
                     completed = task_data[4] == 'True'
                     tasks.append([task_id, description, priority, deadline, completed])
         except FileNotFoundError:
             print(f"File '{self.filename}' not found. No tasks loaded.")
-        except Exception as e:
-            print(f"An error occurred while loading tasks from file '{self.filename}': {e}")
         return tasks
 
 
